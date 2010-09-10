@@ -49,12 +49,12 @@ describe "Aclatraz suspect" do
       subject.is.foobar7_in!(target)
       
       subject.has_role?(:foobar1).should be_true
-      subject.has_role?(:foobar2, StubTarget).should be_true
-      subject.has_role?(:foobar3, target).should be_true
-      subject.has_role?(:foobar4, target).should be_true
-      subject.has_role?(:foobar5, target).should be_true
-      subject.has_role?(:foobar6, target).should be_true
-      subject.has_role?(:foobar7, target).should be_true
+      subject.has_role?(:foobar2_of, StubTarget).should be_true
+      subject.has_role?(:foobar3_for, target).should be_true
+      subject.has_role?(:foobar4_of, target).should be_true
+      subject.has_role?(:foobar5_at, target).should be_true
+      subject.has_role?(:foobar6_by, target).should be_true
+      subject.has_role?(:foobar7_in, target).should be_true
     end
     
     it "2: should properly check given permissions" do 

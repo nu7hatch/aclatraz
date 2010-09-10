@@ -2,7 +2,7 @@ module Aclatraz
   module Suspect
     class SemanticRoles
       class Base
-        SUFFIXES = /(_(of|at|on|by|for|in))?(\?|\!)\Z/
+        ROLE_SUFFIXES = /(_(of|at|on|by|for|in))?(\?|\!)\Z/
     
         attr_reader :suspect
     
@@ -14,9 +14,9 @@ module Aclatraz
       class Yes < Base
         def method_missing(meth, *args, &blk)
           meth = meth.to_s
-          if meth =~ SUFFIXES
+          if meth =~ ROLE_SUFFIXES
             setter = meth[-1].chr == "!" 
-            role = meth.gsub(SUFFIXES, '')
+            role = meth.gsub(ROLE_SUFFIXES, '')
             if setter
               suspect.assign_role!(*args.unshift(role))
             else
@@ -34,9 +34,9 @@ module Aclatraz
       class Not < Base
         def method_missing(meth, *args, &blk)
           meth = meth.to_s
-          if meth =~ SUFFIXES
+          if meth =~ ROLE_SUFFIXES
             deleter = meth[-1].chr == "!"
-            role = meth.gsub(SUFFIXES, '')
+            role = meth.gsub(ROLE_SUFFIXES, '')
             if deleter 
               suspect.delete_role!(*args.unshift(role))
             else
@@ -56,20 +56,22 @@ module Aclatraz
     end
     
     module InstanceMethods
+      ACL_ROLE_SUFFIXES = /(_(of|at|on|by|for|in))?\Z/
+    
       def acl_suspect?
         true
       end
       
       def has_role?(role, object=nil)
-        Aclatraz.store.check(role, self, object)
+        Aclatraz.store.check(role.to_s.gsub(ACL_ROLE_SUFFIXES, ''), self, object)
       end
       
       def assign_role!(role, object=nil)
-        Aclatraz.store.set(role, self, object)
+        Aclatraz.store.set(role.to_s.gsub(ACL_ROLE_SUFFIXES, ''), self, object)
       end 
       
       def delete_role!(role, object=nil)
-        Aclatraz.store.delete(role, self, object)
+        Aclatraz.store.delete(role.to_s.gsub(ACL_ROLE_SUFFIXES, ''), self, object)
       end
       
       def roles

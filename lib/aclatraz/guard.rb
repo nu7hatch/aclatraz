@@ -41,8 +41,6 @@ module Aclatraz
             end
           end
           
-          puts permissions.inspect
-          
           permissions.each do |permission, allow|
             has_permission = check_permission(permission)
             if permission == true
@@ -72,7 +70,8 @@ module Aclatraz
           permission.each do |role, object| 
             case object
             when String
-              object = instance_variable_get("@#{object}") 
+              object = "@#{object}" unless object[0] == "@"
+              object = instance_variable_get(object) 
             when Symbol
               object = send(object)
             end

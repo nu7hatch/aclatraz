@@ -1,6 +1,96 @@
-= aclatraz
+= ACLatraz
 
-Description goes here.
+Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
+powered by fast key value stores like Redis or TokyoCabinet. 
+
+== Installation
+
+You can install ACLatraz via rubygems:
+
+  sudo gem install ACLatraz
+  
+== Basic usage
+
+First of all you have to setup store for ACL data. ACLatraz for now uses only 
+Redis database for storage. Store can be set like below:
+
+  Aclatraz.store :redis, "redis://localhost:6379/0"
+  
+Then you have to define your suspects:  
+
+  class Account < ActiveRecord::Base
+    include Aclatraz::Suspect
+  end
+  
+Now you suspect have few methods which will helps you with managing permissions:
+
+  @account = Account.create
+  @account.has_role?(:foo)     # => false
+  @account.is.foo?             # syntactic sugar for #has_role?
+  @account.assign_role!(foo)   # or @account.is.foo!
+  @account.is.foo?             # => true
+  @account.delete_role!(foo)   # or @account.is_not.foo!
+  @account.is.foo?             # => false
+  @account.is_not.foo?         # => true
+  
+Last step is create you access control list and set guards:
+
+  class Foo
+    include Aclatraz::Guard
+    
+    suspect :account do 
+      allow all
+      
+      on :manage do 
+        allow :root
+        allow :manager
+      end
+      
+      on :delete do 
+        deny :manager
+        allow :owner_of => "@project" 
+      end
+    end
+    
+    # The #suspect method allows to pass String, Symbol or Object as suspect. 
+    # When String given (eg. "account" or "@account") then value of given 
+    # instance variable will be treated as suspect. When Symbol given, then 
+    # system will take value from given instance method. Otherwise given object
+    # will be treated as suspect if possible. 
+    #
+    # Similar situation is with permission arguments. To #allow and #deny 
+    # methods you can pass symbol or hash. Symbol given represents
+    # single role, the hash represents ownership of assigned object or class.
+    # Assigned object declaration behaves the same as suspects' one. 
+    
+    def account
+      @account ||= Account.find(ENV['MYAPP_ACCOUNT'])
+    end
+    
+    def index
+      guard!
+      # ... everybody are allowed to see this
+    end
+    
+    def create
+      guard!(:manage)
+      # ... only managers and root will see this
+    end
+    
+    def delete(id)
+      @product = Product.find(id)
+      guard!(:manage, :delete)
+      # ... only root or or @product owner will see this
+    end
+    
+    def product(id)
+      @product.find(id)
+      account.is.owner_of?(@product) do
+        return @product
+      end
+      return nil
+    end
+  end
 
 == Note on Patches/Pull Requests
  
