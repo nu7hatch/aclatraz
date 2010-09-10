@@ -2,35 +2,34 @@ require 'spec_helper'
 
 describe "Aclatraz ACL" do 
   it "should properly store flat access control lists" do
-    acl = Aclatraz::ACL.new do 
-      allow :foo
-      deny :bar
-      allow :foo => :bar
-    end
-    
-    acl.allowed.should include(:foo)
-    acl.denied.should include(:bar)
-    acl.allowed.should include({:foo=>:bar})
+    acl = Aclatraz::ACL.new {} 
+    acl.actions[:_].allow :foo
+    acl.permissions[:foo].should be_true
+    acl.actions[:_].deny :foo
+    acl.permissions[:foo].should be_false
+    acl.actions[:_].allow :foo => :bar
+    acl.permissions[{:foo=>:bar}].should be_true
   end
   
-  it "should define seperated lists in actions" do 
+  it "should allow for define seperated lists which are inherit from main block" do 
     acl = Aclatraz::ACL.new do 
       allow :foo
-      
-      on :spam do 
-        allow :spam
-      end
-      
-      on :eggs do 
-        allow :eggs
-      end
+      on(:spam) { allow :spam }
+      on(:eggs) { allow :eggs }
+      on(:spam) { allow :boo }
     end
     
-    acl.allowed.should include(:foo)
-    acl.allowed.should_not include(:spam)
-    acl.allowed.should_not include(:eggs)
-    acl[:spam].allowed.should include(:spam)
-    acl[:eggs].allowed.should include(:eggs)
+    acl.permissions[:foo].should be_true
+    acl.permissions[:spam].should_not be_true
+    acl.permissions[:eggs].should_not be_true
+    acl.permissions[:boo].should_not be_true
+    acl[:spam].permissions[:foo].should be_nil
+    acl[:spam].permissions[:spam].should be_true
+    acl[:spam].permissions[:eggs].should be_nil
+    acl[:spam].permissions[:boo].should be_true
+    acl[:eggs].permissions[:foo].should be_nil
+    acl[:eggs].permissions[:eggs].should be_true
+    acl[:eggs].permissions[:spam].should be_nil
   end
   
   it "should raise ArgumentError when no block given" do 

@@ -4,8 +4,6 @@ require 'aclatraz/acl'
 require 'aclatraz/guard'
 require 'aclatraz/suspect'
 
-$VERBOSE = nil
-
 module Aclatraz
   class AccessDenied < Exception; end 
   class InvalidSuspect < ArgumentError; end
@@ -24,7 +22,7 @@ module Aclatraz
         raise InvalidStore, "The #{klass.inspect} ACL store is not defined!"
       end
     else
-      @store or raise StoreNotInitialized
+      @store or raise StoreNotInitialized, "ACL store is not initialized!"
     end    
   end
 end

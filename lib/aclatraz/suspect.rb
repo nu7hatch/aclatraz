@@ -2,22 +2,22 @@ module Aclatraz
   module Suspect
     class SemanticRoles
       class Base
-        SUFFIXES = /_(of|at|on|by|for|in)(\?|\!)\Z/
+        SUFFIXES = /(_(of|at|on|by|for|in))?(\?|\!)\Z/
     
         attr_reader :suspect
     
-        def initialize(user)
+        def initialize(suspect)
           @suspect = suspect
         end
       end
       
       class Yes < Base
         def method_missing(meth, *args, &blk)
-          if meth.to_s =~ SUFFIXES || meth.to_s =~ /(\?|\!)\Z/
-            set = $2 == '!'
-            role = meth.to_s.gsub(SUFFIXES, '').gsub(/\?\Z/, '')
-            
-            if set 
+          meth = meth.to_s
+          if meth =~ SUFFIXES
+            setter = meth[-1].chr == "!" 
+            role = meth.gsub(SUFFIXES, '')
+            if setter
               suspect.assign_role!(*args.unshift(role))
             else
               authorized = suspect.has_role?(*args.unshift(role.to_sym))
@@ -25,18 +25,19 @@ module Aclatraz
               authorized
             end
           else
-            super meth, *args, &blk
+            # super doesn't work here so...
+            raise NoMethodError, "undefined local variable or method method `#{meth}' for #{inspect}:#{self.class.name}"
           end
         end
       end
       
       class Not < Base
         def method_missing(meth, *args, &blk)
-          if meth.to_s =~ SUFFIXES || meth.to_s =~ /(\?|\!)\Z/
-            set = $2 == '!'
-            role = meth.to_s.gsub(SUFFIXES, '').gsub(/\?\Z/, '')
-            
-            if set 
+          meth = meth.to_s
+          if meth =~ SUFFIXES
+            deleter = meth[-1].chr == "!"
+            role = meth.gsub(SUFFIXES, '')
+            if deleter 
               suspect.delete_role!(*args.unshift(role))
             else
               authorized = suspect.has_role?(*args.unshift(role.to_sym))
@@ -44,7 +45,7 @@ module Aclatraz
               !authorized
             end
           else
-            super meth, *args, &blk
+            raise NoMethodError, "undefined local variable or method method `#{meth}' for #{inspect}:#{self.class.name}"
           end
         end
       end
@@ -76,11 +77,11 @@ module Aclatraz
       end
       
       def is
-        @acl_is ||= SemanticRolesYes.new(self)
+        @acl_is ||= SemanticRoles::Yes.new(self)
       end
       
       def is_not
-        @acl_is_not ||= SemanticRolesNot.new(self)
+        @acl_is_not ||= SemanticRoles::Not.new(self)
       end
     end
   end

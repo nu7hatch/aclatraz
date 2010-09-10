@@ -1,21 +1,20 @@
 module Aclatraz
   class ACL
     class Action
-      attr_reader :allowed
-      attr_reader :denied
+      attr_reader :permissions
 
       def initialize(parent, &block)
         @parent = parent
-        @allowed, @denied = [], []
+        @permissions = {}
         instance_eval(&block)
       end
 
       def allow(permission)
-        @allowed << permission
+        @permissions[permission] = true
       end
     
       def deny(permission)
-        @denied << permission
+        @permissions[permission] = false
       end
       
       def on(*args, &block)
@@ -30,12 +29,8 @@ module Aclatraz
       on(:_, &block)
     end
     
-    def allowed
-      @actions[:_].allowed
-    end
-    
-    def denied
-      @actions[:_].denied
+    def permissions
+      @actions[:_] ? @actions[:_].permissions : {}
     end
     
     def [](action)

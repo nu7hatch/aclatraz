@@ -2,10 +2,20 @@ module Aclatraz
   module Guard
     def self.included(base)
       base.send :extend, ClassMethods
-      base.send :include, InstanceMethods  
+      base.send :include, InstanceMethods
     end
     
-    module CommonMethods
+    module ClassMethods
+      attr_reader :acl_suspect
+      attr_reader :acl_permissions
+      
+      def suspects(name, &block)
+        @acl_suspect = name
+        @acl_permissions = ACL.new(&block)
+      end
+    end
+    
+    module InstanceMethods
       def current_suspect
         @current_suspect ||= case self.class.acl_suspect
         when Symbol, String
@@ -17,25 +27,24 @@ module Aclatraz
       
       def guard!(*actions)
         if current_suspect.suspect?
-          actions = [:_] if actions.empty?
-          allowed, denied = [], []
-          authorized = true
+          actions.unshift(:_)
+          authorized = false
+          permissions = {}
+          actions.each {|action| permissions.merge!(acl_permissions.actions[action]) }
           
-          actions.each do |action|
-            allowed += acl_permissions.allowed
-            denied  += acl_permissions.denied  
+          permissions.each do |permission, allow|
+            has_permission = check_permission(permission)
+            authorized ||= allow ? has_permission : !has_permission
           end
           
-          authorized |= allowed.any? {|permission| assert_permission(permission) }
-          authorized |= denied.all? {|permission| !assert_permission(permission) }
-          
           raise Aclatraz::AccessDenied unless authorized
+          true
         else
           raise Aclatraz::InvalidSuspect
         end
       end
       
-      def assert_permission(permission)
+      def check_permission(permission)
         case permission
         when String, Symbol
           current_suspect.has_role?(permission)
@@ -45,22 +54,6 @@ module Aclatraz
           raise Aclatraz::InvalidPermission
         end
       end
-    end
-    
-    module ClassMethods
-      include CommonMethods
-
-      attr_reader :acl_suspect
-      attr_reader :acl_permissions
-      
-      def suspects(name, &block)
-        @acl_suspect = name
-        @acl_permissions = ACL.new(&block)
-      end
-    end
-    
-    module InstanceMethods
-      include CommonMethods
     end
   end
 end
