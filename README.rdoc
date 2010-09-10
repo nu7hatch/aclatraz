@@ -7,7 +7,7 @@ powered by fast key value stores like Redis or TokyoCabinet.
 
 You can install ACLatraz via rubygems:
 
-  sudo gem install ACLatraz
+  sudo gem install aclatraz
   
 == Basic usage
 
