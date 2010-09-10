@@ -6,14 +6,16 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "aclatraz"
     gem.summary = %Q{Flexible access control that doesn't sucks!}
-    gem.description = %Q{Extremaly fast and flexible access control mechanism inspired by *nix ACLs, powered by fast key value stores like Redis or TokyoCabinet.}
+    gem.description = <<-DESCR
+      Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
+      powered by fast key value stores like Redis or TokyoCabinet.
+    DESCR
     gem.email = "kriss.kowalik@gmail.com"
     gem.homepage = "http://github.com/nu7hatch/aclatraz"
     gem.authors = ["Kriss 'nu7hatch' Kowalik"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "mocha", ">= 0.9"
     gem.add_development_dependency "redis", "~> 2.0"
-    #gem.add_development_dependency "tokyocabinet", ">= XX"
     gem.add_dependency "dictionary", "~> 1.0"
   end
   Jeweler::GemcutterTasks.new
@@ -43,4 +45,9 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "ACLatraz #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+task :benchmark do 
+  require 'benchmark'
+  require File.dirname(__FILE__)+"/spec/alcatraz_bm"
 end

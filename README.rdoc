@@ -38,7 +38,7 @@ Last step is create you access control list and set guards:
   class Foo
     include Aclatraz::Guard
     
-    suspect :account do 
+    suspects :account do 
       allow all
       
       on :manage do 
