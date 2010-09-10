@@ -1,8 +1,4 @@
 module Aclatraz
-  class AccessDenied < Exception; end 
-  class InvalidSuspect < ArgumentError; end
-  class InvalidPermission < ArgumentError; end
-  
   module Guard
     def self.included(base)
       base.send :extend, ClassMethods

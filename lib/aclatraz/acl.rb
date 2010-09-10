@@ -1,10 +1,11 @@
 module Aclatraz
   class ACL
-    class Permissions
+    class Action
       attr_reader :allowed
       attr_reader :denied
 
-      def initialize(&block)
+      def initialize(parent, &block)
+        @parent = parent
         @allowed, @denied = [], []
         instance_eval(&block)
       end
@@ -15,6 +16,10 @@ module Aclatraz
     
       def deny(permission)
         @denied << permission
+      end
+      
+      def on(*args, &block)
+        @parent.on(*args, &block)
       end
     end    
     
@@ -29,15 +34,20 @@ module Aclatraz
       @actions[:_].allowed
     end
     
-    def deny
+    def denied
       @actions[:_].denied
     end
     
+    def [](action)
+      @actions[action]
+    end
+    
     def on(action, &block)
+      raise ArgumentError, "No block given" unless block_given?
       if @actions.key?(action)
-        @actions[action] = Permissions.new(&block)
-      else
         @actions[action].instance_eval(&block)
+      else
+        @actions[action] = Action.new(self, &block)
       end
     end
   end
