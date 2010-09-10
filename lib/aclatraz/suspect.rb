@@ -71,6 +71,10 @@ module Aclatraz
         Aclatraz.store.delete(role, self, object)
       end
       
+      def roles
+        Aclatraz.store.roles(self)
+      end
+      
       def is
         @acl_is ||= SemanticRolesYes.new(self)
       end

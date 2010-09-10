@@ -24,8 +24,8 @@ module Aclatraz
         end
       end
       
-      def members(role)
-        @backend.smembers(role).map {|m| m.split('/').first }.uniq
+      def permissions(role)
+        @backend.smembers(role)
       end
       
       def roles(member=nil)

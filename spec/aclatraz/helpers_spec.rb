@@ -11,10 +11,10 @@ describe "Aclatraz helpers" do
   it "#pack should return packed permission" do 
     pack(10).should == "10"
     
-    class StubTarget; def id; 15; end; end
+    class StubTarget; def id; 10; end; end
     pack(10, StubTarget).should == "10/StubTarget" 
 
     target = StubTarget.new
-    pack(10, target).should == "10/StubTarget/15"
+    pack(20, target).should == "20/StubTarget/10"
   end
 end

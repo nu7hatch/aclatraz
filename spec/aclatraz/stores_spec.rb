@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe "Aclatraz" do
   it "should raise InvalidStore error when given store doesn't exists" do 
     lambda { Aclatraz.store(:fooobar) }.should raise_error(Aclatraz::InvalidStore)
@@ -54,14 +56,14 @@ describe "Aclatraz" do
       subject.check("bar", owner, target).should be_false
     end
     
-    it "should allow to fetch list of members for current role" do 
-      subject.set("bar", owner, StubTarget)
+    it "should allow to fetch list of permissions for current role" do 
+      subject.set("bar", owner)
       subject.set("bar", owner, target)
       class << owner; def id; 20; end; end
-      subject.set("bar", owner, target)
+      subject.set("bar", owner, StubTarget)
       
-      (subject.members("bar") - ["15", "20"]).should be_empty
-      subject.members("lala").should be_empty
+      (subject.permissions("bar") - ["15", "15/StubTarget/10", "20/StubTarget"]).should be_empty
+      subject.permissions("lala").should be_empty
     end 
     
     it "should allow to fetch whole list of roles" do 
