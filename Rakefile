@@ -11,6 +11,10 @@ begin
     gem.homepage = "http://github.com/nu7hatch/aclatraz"
     gem.authors = ["Kriss 'nu7hatch' Kowalik"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "mocha", ">= 0.9"
+    gem.add_development_dependency "redis", "~> 2.0"
+    #gem.add_development_dependency "tokyocabinet", ">= XX"
+    gem.add_dependency "dictionary", "~> 1.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

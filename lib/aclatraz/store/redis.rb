@@ -20,12 +20,12 @@ module Aclatraz
             @backend.hset(ROLES_KEY, role, 1)
             @backend.hset(MEMBER_ROLES_KEY % owner.id.to_s, role, 1)
           end
-          @backend.sadd(role, pack(owner.id, object))
+          @backend.sadd(role.to_s, pack(owner.id, object))
         end
       end
       
       def permissions(role)
-        @backend.smembers(role)
+        @backend.smembers(role.to_s)
       end
       
       def roles(member=nil)
@@ -37,11 +37,11 @@ module Aclatraz
       end
       
       def check(role, owner, object=nil)
-        @backend.sismember(role, pack(owner.id, object))
+        @backend.sismember(role.to_s, pack(owner.id, object))
       end
       
       def delete(role, owner, object=nil)
-        @backend.srem(role, pack(owner.id, object))
+        @backend.srem(role.to_s, pack(owner.id, object))
       end
       
       def clear

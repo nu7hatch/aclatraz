@@ -13,28 +13,47 @@ module Aclatraz
         @acl_suspect = name
         @acl_permissions = ACL.new(&block)
       end
+      alias_method :access_control, :suspects
     end
     
     module InstanceMethods
       def current_suspect
-        @current_suspect ||= case self.class.acl_suspect
-        when Symbol, String
-          instance_variable_get("@#{self.class.suspect_name}")
+        case self.class.acl_suspect
+        when Symbol
+          @current_suspect ||= send(self.class.acl_suspect)
+        when String
+          @current_suspect ||= instance_variable_get("@#{self.class.acl_suspect}")
         else
-          self.class.suspect_name     
+          @current_suspect ||= self.class.acl_suspect     
         end
       end
       
       def guard!(*actions)
-        if current_suspect.suspect?
+        if current_suspect.respond_to?(:acl_suspect?)
           actions.unshift(:_)
           authorized = false
-          permissions = {}
-          actions.each {|action| permissions.merge!(acl_permissions.actions[action]) }
+          permissions = Dictionary.new
+          
+          actions.each do |action| 
+            self.class.acl_permissions.actions[action].permissions.each_pair do |key, value|     
+              permissions.delete(key)
+              permissions.push(key, value)
+            end
+          end
+          
+          puts permissions.inspect
           
           permissions.each do |permission, allow|
             has_permission = check_permission(permission)
-            authorized ||= allow ? has_permission : !has_permission
+            if permission == true
+              authorized = allow ? true : false
+              next
+            end
+            if allow
+              authorized ||= has_permission  
+            else
+              authorized = false if has_permission
+            end
           end
           
           raise Aclatraz::AccessDenied unless authorized
@@ -43,13 +62,23 @@ module Aclatraz
           raise Aclatraz::InvalidSuspect
         end
       end
+      alias_method :authorize!, :guard!
       
       def check_permission(permission)
         case permission
-        when String, Symbol
+        when String, Symbol, true
           current_suspect.has_role?(permission)
         when Hash
-          permission.each {|role, object| current_suspect.has_role?(role, object) }
+          permission.each do |role, object| 
+            case object
+            when String
+              object = instance_variable_get("@#{object}") 
+            when Symbol
+              object = send(object)
+            end
+            return true if current_suspect.has_role?(role, object)
+          end
+          false
         else
           raise Aclatraz::InvalidPermission
         end

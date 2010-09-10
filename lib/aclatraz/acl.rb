@@ -2,10 +2,10 @@ module Aclatraz
   class ACL
     class Action
       attr_reader :permissions
-
+      
       def initialize(parent, &block)
         @parent = parent
-        @permissions = {}
+        @permissions = Dictionary.new
         instance_eval(&block)
       end
 
@@ -15,6 +15,10 @@ module Aclatraz
     
       def deny(permission)
         @permissions[permission] = false
+      end
+      
+      def all
+        true
       end
       
       def on(*args, &block)
@@ -30,7 +34,7 @@ module Aclatraz
     end
     
     def permissions
-      @actions[:_] ? @actions[:_].permissions : {}
+      @actions[:_] ? @actions[:_].permissions : Dictionary.new
     end
     
     def [](action)

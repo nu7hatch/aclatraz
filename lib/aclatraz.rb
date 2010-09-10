@@ -1,3 +1,5 @@
+require 'dictionary'
+
 require 'aclatraz/helpers'
 require 'aclatraz/store'
 require 'aclatraz/acl'
@@ -23,6 +25,6 @@ module Aclatraz
       end
     else
       @store or raise StoreNotInitialized, "ACL store is not initialized!"
-    end    
+    end
   end
 end

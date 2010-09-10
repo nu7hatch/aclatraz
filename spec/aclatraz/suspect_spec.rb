@@ -1,15 +1,7 @@
 require 'spec_helper'
 
-class StubSuspect
-  include Aclatraz::Suspect
-  def id; 10; end 
-end
-
-class StubTarget
-  def id; 10; end
-end
-
 describe "Aclatraz suspect" do 
+  before(:all) { Aclatraz.store(:redis, "redis://localhost:6379/0") }
   subject { StubSuspect.new }
   let(:target) { StubTarget.new }
   

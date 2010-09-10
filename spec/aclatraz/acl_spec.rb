@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe "Aclatraz ACL" do 
+  before(:all) { Aclatraz.store(:redis, "redis://localhost:6379/0") }
+  
   it "should properly store flat access control lists" do
     acl = Aclatraz::ACL.new {} 
     acl.actions[:_].allow :foo

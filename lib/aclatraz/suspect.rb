@@ -25,7 +25,7 @@ module Aclatraz
               authorized
             end
           else
-            # super doesn't work here so...
+            # super doesn't work here, so...
             raise NoMethodError, "undefined local variable or method method `#{meth}' for #{inspect}:#{self.class.name}"
           end
         end
