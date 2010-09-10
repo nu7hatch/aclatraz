@@ -52,7 +52,7 @@ Last step is create you access control list and set guards:
       end
     end
     
-    # The #suspect method allows to pass String, Symbol or Object as suspect. 
+    # The #suspects method allows to pass String, Symbol or Object as suspect. 
     # When String given (eg. "account" or "@account") then value of given 
     # instance variable will be treated as suspect. When Symbol given, then 
     # system will take value from given instance method. Otherwise given object
