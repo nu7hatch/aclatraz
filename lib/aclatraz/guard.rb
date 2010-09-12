@@ -9,27 +9,28 @@ module Aclatraz
       attr_reader :acl_suspect
       attr_reader :acl_permissions
       
-      def suspects(name, &block)
-        @acl_suspect = name
+      def suspects(suspect=nil, &block)
+        @acl_suspect = suspect if suspect
+        @acl_permissions and return @acl_permissions.evaluate(&block) 
         @acl_permissions = ACL.new(&block)
       end
       alias_method :access_control, :suspects
     end
     
     module InstanceMethods
-      def current_suspect
+      def suspect
         case self.class.acl_suspect
         when Symbol
-          @current_suspect ||= send(self.class.acl_suspect)
+          @suspect ||= send(self.class.acl_suspect)
         when String
-          @current_suspect ||= instance_variable_get("@#{self.class.acl_suspect}")
+          @suspect ||= instance_variable_get("@#{self.class.acl_suspect}")
         else
-          @current_suspect ||= self.class.acl_suspect     
+          @suspect ||= self.class.acl_suspect     
         end
       end
       
       def guard!(*actions)
-        if current_suspect.respond_to?(:acl_suspect?)
+        if suspect.respond_to?(:acl_suspect?)
           actions.unshift(:_)
           authorized = false
           permissions = Dictionary.new
@@ -65,7 +66,7 @@ module Aclatraz
       def check_permission(permission)
         case permission
         when String, Symbol, true
-          current_suspect.has_role?(permission)
+          suspect.has_role?(permission)
         when Hash
           permission.each do |role, object| 
             case object
@@ -75,7 +76,7 @@ module Aclatraz
             when Symbol
               object = send(object)
             end
-            return true if current_suspect.has_role?(role, object)
+            return true if suspect.has_role?(role, object)
           end
           false
         else

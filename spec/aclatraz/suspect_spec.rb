@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Aclatraz suspect" do 
-  before(:all) { Aclatraz.store(:redis, "redis://localhost:6379/0") }
+  before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
   subject { StubSuspect.new }
   let(:target) { StubTarget.new }
   

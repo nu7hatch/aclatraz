@@ -59,28 +59,13 @@ STORE_SPECS = proc do
 end
 
 describe "Aclatraz" do
-  it "should raise InvalidStore error when given store doesn't exists" do 
-    lambda { Aclatraz.store(:fooobar) }.should raise_error(Aclatraz::InvalidStore)
-  end
-  
-  it "should raise StoreNotInitialized error when store has not been set yet" do 
-    Aclatraz.instance_variable_set('@store', nil)
-    lambda { Aclatraz.store }.should raise_error(Aclatraz::StoreNotInitialized)
-  end
-  
-  it "should properly set datastore when class given" do 
-    class TestStore; end
-    lambda { Aclatraz.store(TestStore) }.should_not raise_error
-    Aclatraz.store.should be_kind_of(TestStore)
-  end
-  
   let(:owner) { StubOwner.new }
   let(:target) { StubTarget.new }
   
   describe "Redis store" do 
     before(:all) { @redis = Thread.new { `redis-server` } }
     after(:all) { @redis.exit! }
-    subject { Aclatraz.store(:redis, "redis://localhost:6379/0") }
+    subject { Aclatraz.init(:redis, "redis://localhost:6379/0") }
     before(:each) { subject.clear }
     
     class_eval &STORE_SPECS

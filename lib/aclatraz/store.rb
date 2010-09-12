@@ -1,6 +1,6 @@
 module Aclatraz
   module Store
-    #autoload :Memcached,     'aclatraz/store/memcached'
+    #autoload :Memcached,    'aclatraz/store/memcached'
     autoload :Redis,        'aclatraz/store/redis'
     #autoload :TokyoCabinet, 'aclatraz/store/tokyocabinet'
   

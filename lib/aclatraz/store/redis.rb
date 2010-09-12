@@ -1,7 +1,7 @@
 begin
   require 'redis'
 rescue LoadError
-  raise "You must install redis to use the Redis store backend"
+  raise "You must install the redis gem to use the Redis store"
 end
 
 module Aclatraz

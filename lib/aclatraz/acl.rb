@@ -30,6 +30,10 @@ module Aclatraz
     
     def initialize(&block)
       @actions = {}
+      evaluate(&block)
+    end
+    
+    def evaluate(&block)
       on(:_, &block)
     end
     

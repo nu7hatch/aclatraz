@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Aclatraz guard" do 
   include Aclatraz::Guard
   
-  before(:all) { Aclatraz.store(:redis, "redis://localhost:6379/0") }
+  before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
   let(:foo) { @foo ||= StubSuspect.new }
   let(:target) { StubTarget.new }
   
@@ -25,6 +25,8 @@ describe "Aclatraz guard" do
     on :allow_all do 
       allow all
     end
+  end
+  suspects do 
     allow :role5
   end
   
@@ -123,17 +125,17 @@ describe "Aclatraz guard" do
   describe "suspect object is symbol" do
     suspects(:foo) {}
 
-    it "#current_suspect" do 
-      current_suspect.should == foo
+    it "#suspect" do 
+      suspect.should == foo
     end
   end
     
   describe "suspect object is string" do
     suspects('foo') {}
     
-    it "#current_suspect" do 
+    it "#suspect" do 
       @foo = StubSuspect.new
-      current_suspect.should == @foo
+      suspect.should == @foo
     end
   end
   
@@ -141,8 +143,8 @@ describe "Aclatraz guard" do
     bar = StubSuspect.new
     suspects(bar) {}
     
-    it "#current_suspect" do 
-      current_suspect.should == bar
+    it "#suspect" do 
+      suspect.should == bar
     end
   end 
 end

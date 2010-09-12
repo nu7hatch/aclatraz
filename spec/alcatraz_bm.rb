@@ -2,7 +2,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require "aclatraz"
 
-Aclatraz.store :redis, "redis://localhost:6379/0"
+Aclatraz.init :redis, "redis://localhost:6379/0"
 
 class Account
   include Aclatraz::Suspect

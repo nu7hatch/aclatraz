@@ -9,21 +9,24 @@ module Aclatraz
         def initialize(suspect)
           @suspect = suspect
         end
-      end
+        
+        def reader(*args, &blk)
+          authorized = suspect.has_role?(*args)
+          blk.call if authorized && block_given?
+          authorized
+        end
+        
+        def writer(*args)
+          suspect.assign_role!(*args)
+        end
       
-      class Yes < Base
         def method_missing(meth, *args, &blk)
           meth = meth.to_s
           if meth =~ ROLE_SUFFIXES
-            setter = meth[-1].chr == "!" 
-            role = meth.gsub(ROLE_SUFFIXES, '')
-            if setter
-              suspect.assign_role!(*args.unshift(role))
-            else
-              authorized = suspect.has_role?(*args.unshift(role.to_sym))
-              blk.call if authorized && block_given?
-              authorized
-            end
+            write = meth[-1].chr == "!" 
+            role  = meth.gsub(ROLE_SUFFIXES, '')
+            args.unshift(role.to_sym)
+            write ? writer(*args) : reader(*args, &blk)
           else
             # super doesn't work here, so...
             raise NoMethodError, "undefined local variable or method method `#{meth}' for #{inspect}:#{self.class.name}"
@@ -31,22 +34,19 @@ module Aclatraz
         end
       end
       
+      class Yes < Base
+        # nothing to do, only syntactic sugar...
+      end
+      
       class Not < Base
-        def method_missing(meth, *args, &blk)
-          meth = meth.to_s
-          if meth =~ ROLE_SUFFIXES
-            deleter = meth[-1].chr == "!"
-            role = meth.gsub(ROLE_SUFFIXES, '')
-            if deleter 
-              suspect.delete_role!(*args.unshift(role))
-            else
-              authorized = suspect.has_role?(*args.unshift(role.to_sym))
-              blk.call if !authorized && block_given?
-              !authorized
-            end
-          else
-            raise NoMethodError, "undefined local variable or method method `#{meth}' for #{inspect}:#{self.class.name}"
-          end
+        def writer(*args)
+          suspect.delete_role!(*args)
+        end
+        
+        def reader(*args, &blk)
+          authorized = suspect.has_role?(*args)
+          blk.call if !authorized && block_given?
+          !authorized
         end
       end
     end

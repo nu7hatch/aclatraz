@@ -15,16 +15,14 @@ module Aclatraz
   
   extend Helpers
   
-  def self.store(klass=nil, *args)
-    if klass
-      begin
-        klass = eval("Aclatraz::Store::#{camelize(klass.to_s)}") unless klass.is_a?(Class)
-        @store = klass.new(*args)
-      rescue NameError
-        raise InvalidStore, "The #{klass.inspect} ACL store is not defined!"
-      end
-    else
-      @store or raise StoreNotInitialized, "ACL store is not initialized!"
-    end
+  def self.init(klass, *args)
+    klass = eval("Aclatraz::Store::#{camelize(klass.to_s)}") unless klass.is_a?(Class)
+    @store = klass.new(*args)
+  rescue NameError
+    raise InvalidStore, "The #{klass.inspect} ACL store is not defined!"
+  end
+  
+  def self.store
+    @store or raise StoreNotInitialized, "ACLatraz is not initialized!"
   end
 end

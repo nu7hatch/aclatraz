@@ -11,18 +11,18 @@ You can install ACLatraz via rubygems:
   
 == Basic usage
 
-First of all you have to setup store for ACL data. ACLatraz for now uses only 
-Redis database for storage. Store can be set like below:
+First of all you have to initialize ACL system with specified datastore. Here's
+an example with Redis:
 
-  Aclatraz.store :redis, "redis://localhost:6379/0"
+  Aclatraz.init :redis, "redis://localhost:6379/0"
   
-Then you have to define your suspects:  
+Then you have to define your suspects, eg.  
 
   class Account < ActiveRecord::Base
     include Aclatraz::Suspect
   end
   
-Now you suspect have few methods which will helps you with managing permissions:
+Now your suspect have few methods which will helps you manage permissions:
 
   @account = Account.create
   @account.has_role?(:foo)     # => false
