@@ -1,18 +1,26 @@
 module Aclatraz
   module Helpers
-    def pack(prefix, object=nil)
+    # Pack given permission data.
+    #
+    #   pack(10)               # => "10"
+    #   pack(10, "FooClass")   # => "10/FooClass"
+    #   pack(10, FooClass.new) # => "10/FooClass/{foo_object_ID}"
+    def pack(owner, object=nil)
       case object
       when nil
-        "#{prefix}"
+        "#{owner}"
       when Class 
-        "#{prefix}/#{object.name}"
+        "#{owner}/#{object.name}"
       else 
-        "#{prefix}/#{object.class.name}/#{object.id}"
+        "#{owner}/#{object.class.name}/#{object.id}"
       end
     end
     
+    # Given underscored word, returns camelized version of it. 
+    #
+    #   camelize(foo_bar_bla) # => "FooBarBla"
     def camelize(str)
       str.split('_').map {|w| w.capitalize}.join
     end
-  end
-end
+  end # Helpers
+end # Aclatraz

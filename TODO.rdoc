@@ -1,0 +1,5 @@
+== TODO
+
+* TokyoCabinet store
+* Memcached store
+* Think that the main roles should have an impact on object/class ownerships

@@ -3,8 +3,13 @@ require 'spec_helper'
 describe "Aclatraz ACL" do 
   before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
   
+  it "should properly store suspect" do 
+    acl = Aclatraz::ACL.new(:bar) {}
+    acl.suspect.should == :bar
+  end
+  
   it "should properly store flat access control lists" do
-    acl = Aclatraz::ACL.new {} 
+    acl = Aclatraz::ACL.new(:foo) {} 
     acl.actions[:_].allow :foo
     acl.permissions[:foo].should be_true
     acl.actions[:_].deny :foo
@@ -14,7 +19,7 @@ describe "Aclatraz ACL" do
   end
   
   it "should allow for define seperated lists which are inherit from main block" do 
-    acl = Aclatraz::ACL.new do 
+    acl = Aclatraz::ACL.new(:foo) do 
       allow :foo
       on(:spam) { allow :spam }
       on(:eggs) { allow :eggs }

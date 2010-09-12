@@ -1,0 +1,19 @@
+== Version 0.1.0
+
+* Inherited access control lists
+* Optimized Aclatraz::Guard & Aclatraz::ACL
+* Added aliases: #access_control for #suspects and #authorize! for #guard! in Aclatraz::Guard
+* Added #init to Aclatraz
+* Added Aclatraz::Suspect::Roles
+* Added #roles proxy instead of #assign_role!, #delete_role!, #has_role? in Aclatraz::Suspect
+
+* Code documentation
+
+== Version 0.0.1 (proof of concept)
+
+* Redis store
+* Flat access control lists
+* Semantic permissions in suspect
+
+* Basic documentation
+* Benchmarks

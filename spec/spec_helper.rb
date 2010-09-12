@@ -17,6 +17,13 @@ class StubSuspect
   def id; 10; end 
 end
 
+class StubGuarded
+  include Aclatraz::Guard
+  class << self
+    attr_accessor :name
+  end
+end
+
 class StubTarget
   def id; 10; end
 end

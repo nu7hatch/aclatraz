@@ -1,11 +1,7 @@
 module Aclatraz
   module Store
-    #autoload :Memcached,    'aclatraz/store/memcached'
     autoload :Redis,        'aclatraz/store/redis'
+    #autoload :Memcached,    'aclatraz/store/memcached'
     #autoload :TokyoCabinet, 'aclatraz/store/tokyocabinet'
-  
-    class Base
-      include Aclatraz::Helpers            
-    end
-  end
-end
+  end # Store
+end # Aclatraz

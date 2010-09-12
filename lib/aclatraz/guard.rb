@@ -1,88 +1,157 @@
 module Aclatraz
   module Guard
-    def self.included(base)
+    def self.included(base) # :nodoc:
       base.send :extend, ClassMethods
       base.send :include, InstanceMethods
     end
     
     module ClassMethods
-      attr_reader :acl_suspect
-      attr_reader :acl_permissions
-      
+      def acl_guard? # :nodoc:
+        true
+      end
+
+      # Define access controll list for current class. 
+      #
+      # ==== Examples
+      #
+      #   suspects :foo do # foo method result will be treated as suspect
+      #     deny all 
+      #     allow :admin
+      #     
+      #     on :create do 
+      #       allow :manager
+      #       allow :manager_of => ClassName 
+      #     end
+      #
+      #     on :edit do
+      #       # only @object_name instance variable owner is allowed to edit it. 
+      #       allow :owner_of => "object_name" 
+      #     end 
+      #   end 
+      #
+      #   # When called second time don't have to specify suspected object.  
+      #   suspects do 
+      #     allow :manager
+      #   end
       def suspects(suspect=nil, &block)
-        @acl_suspect = suspect if suspect
-        @acl_permissions and return @acl_permissions.evaluate(&block) 
-        @acl_permissions = ACL.new(&block)
+        if acl = Aclatraz.acl[name]
+          acl.suspect = suspect if suspect
+          acl.evaluate(&block)
+        elsif superclass.respond_to?(:acl_guard?) && acl = Aclatraz.acl[superclass.name]
+          Aclatraz.acl[name] = acl.clone(&block)
+        else
+          Aclatraz.acl[name] = Aclatraz::ACL.new(suspect, &block)
+        end
       end
       alias_method :access_control, :suspects
-    end
+    end # ClassMethods
     
     module InstanceMethods
+      # Returns suspected object.
+      #
+      # * when suspect name is a String then will return instance variable
+      # * when suspect name is a Symbol then will be returned value of instance method
+      # * otherwise suspect name will be treated as suspect object.  
+      #
+      # ==== Examples
+      #
+      #   class Bar
+      #     suspects(:foo) { ... }
+      #     def foo; @foo = Foo.new; end 
+      #   end
+      #   Bar.new.suspect.class # => Foo
+      #
+      #   class Bla
+      #     suspects("foo") { ... }
+      #     def init; @foo = Foo.new; end
+      #   end 
+      #   Bla.new.suspect.class # => Foo
+      #
+      #   class Spam
+      #     foo = Foo.new
+      #     suspects(foo) { ... }
+      #   end
+      #   Spam.new.suspect.class # => Foo
+      #
+      # You can also override this method in your protected class, and skip
+      # passing arguments to +#suspects+ method, eg.
+      #
+      #   class Eggs
+      #     suspects { ... }
+      #     def suspect; @foo = Foo.new; end
+      #   end
       def suspect
-        case self.class.acl_suspect
-        when Symbol
-          @suspect ||= send(self.class.acl_suspect)
-        when String
-          @suspect ||= instance_variable_get("@#{self.class.acl_suspect}")
-        else
-          @suspect ||= self.class.acl_suspect     
+        @suspect ||= if acl = Aclatraz.acl[self.class.name]
+          case acl.suspect
+          when Symbol 
+            send(acl.suspect)
+          when String 
+            instance_variable_get("@#{acl.suspect}")
+          else 
+            acl.suspect
+          end
         end
       end
       
+      # Check if current suspect have permissions to execute following code.
+      # If suspect hasn't required permissions, or access for any of his roles 
+      # is denied then raises +Aclatraz::AccessDenied+ error.
       def guard!(*actions)
-        if suspect.respond_to?(:acl_suspect?)
-          actions.unshift(:_)
-          authorized = false
-          permissions = Dictionary.new
-          
-          actions.each do |action| 
-            self.class.acl_permissions.actions[action].permissions.each_pair do |key, value|     
-              permissions.delete(key)
-              permissions.push(key, value)
-            end
+        acl = Aclatraz.acl[self.class.name] or raise UndefinedAccessControlList, "No ACL for #{self.class.name} class"
+        suspect.respond_to?(:acl_suspect?)  or raise Aclatraz::InvalidSuspect, "Invalid ACL suspect: #{suspect.inspect}"
+        authorized = false
+        permissions = Dictionary.new
+        actions.unshift(:_)
+        
+        actions.each do |action| 
+          acl.actions[action].permissions.each_pair do |key, value|     
+            permissions.delete(key)
+            permissions.push(key, value)
           end
-          
-          permissions.each do |permission, allow|
-            has_permission = check_permission(permission)
-            if permission == true
-              authorized = allow ? true : false
-              next
-            end
-            if allow
-              authorized ||= has_permission  
-            else
-              authorized = false if has_permission
-            end
-          end
-          
-          raise Aclatraz::AccessDenied unless authorized
-          true
-        else
-          raise Aclatraz::InvalidSuspect
         end
+        
+        permissions.each do |permission, allow|
+          if permission == true
+            authorized = allow ? true : false
+            next
+          end
+          if allow
+            authorized ||= assert_permission(permission)  
+          else
+            authorized = false if assert_permission(permission)
+          end
+        end
+        
+        authorized or raise Aclatraz::AccessDenied, "Access Denied"
+        return true
       end
       alias_method :authorize!, :guard!
       
-      def check_permission(permission)
+      # Check if current suspect has given permissions. 
+      #
+      # ==== Examples
+      #
+      #   assert_permission(:admin)
+      #   assert_permission(:manager_of => ClassName)
+      #   assert_permission(:owner_of => "object")
+      def assert_permission(permission)
         case permission
         when String, Symbol, true
-          suspect.has_role?(permission)
+          suspect.roles.has?(permission)
         when Hash
           permission.each do |role, object| 
-            case object
-            when String
-              object = "@#{object}" unless object[0] == "@"
-              object = instance_variable_get(object) 
-            when Symbol
+            if object.is_a?(String)
+              object = instance_variable_get(object[0] ? "@#{object}" : object) 
+            elsif object.is_a?(Symbol) 
               object = send(object)
             end
-            return true if suspect.has_role?(role, object)
+            return true if suspect.roles.has?(role, object)
           end
-          false
+          return false
         else
-          raise Aclatraz::InvalidPermission
+          raise Aclatraz::InvalidPermission, "Invalid ACL permission: #{permission.inspect}"
         end
       end
-    end
-  end
-end
+    end # InstanceMethods
+  end # Guard
+end # Aclatraz

@@ -6,11 +6,13 @@ end
 
 module Aclatraz
   module Store
-    class Redis < Base
+    class Redis
+      include Aclatraz::Helpers
+      
       ROLES_KEY = "aclatraz.roles"
       MEMBER_ROLES_KEY = "member.%s.roles"
       
-      def initialize(*args)
+      def initialize(*args) # :nodoc:
         @backend = ::Redis.new(*args)
       end
 
@@ -37,7 +39,9 @@ module Aclatraz
       end
       
       def check(role, owner, object=nil)
-        @backend.sismember(role.to_s, pack(owner.id, object))
+        @backend.sismember(role.to_s, pack(owner.id, object)) or begin
+          object && !object.is_a?(Class) ? check(role, owner, object.class) : false
+        end
       end
       
       def delete(role, owner, object=nil)
@@ -47,6 +51,6 @@ module Aclatraz
       def clear
         @backend.flushdb
       end
-    end
-  end
-end
+    end # Redis
+  end # Store
+end # Aclatraz
