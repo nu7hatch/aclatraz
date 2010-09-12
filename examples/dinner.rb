@@ -28,14 +28,12 @@ class Kitchen
     end
   end
   
-  attr_accessor :person
-  
   def initialize(person)
     @person = person
   end
   
   def prepare_dinner
-    guard! :lay_dinner
+    guard! :prepare_dinner
     @dinner = Dinner.create
     @person.is.creator_of!(@dinner)
   end
@@ -52,7 +50,7 @@ class Kitchen
   end
 end
 
-# Examples...
+# Usage...
 
 person  = Person.find(10)
 kitchen = Kitchen.new(person)
