@@ -25,13 +25,15 @@ Then you have to define your suspects, eg.
 Now your suspect have few methods which will helps you manage permissions:
 
   @account = Account.create
-  @account.has_role?(:foo)     # => false
-  @account.is.foo?             # syntactic sugar for #has_role?
-  @account.assign_role!(foo)   # or @account.is.foo!
-  @account.is.foo?             # => true
-  @account.delete_role!(foo)   # or @account.is_not.foo!
+  @account.roles.has?(:foo)    # => false
+  @account.roles.assign(foo)   
+  @account.roles.has?(:foo)    # => true
+  @account.roles.delete(foo)   
+  
   @account.is.foo?             # => false
   @account.is_not.foo?         # => true
+  @account.is.foo!             # shortcut for roles.assign(:foo)
+  @account.is_not.foo!         # shortcut for roles.delete(:foo)
   
 Last step is create you access control list and set guards:
 
