@@ -30,16 +30,6 @@ STORE_SPECS = proc do
     subject.check("bar", owner, target).should be_false
   end
   
-  it "should allow to fetch list of permissions for current role" do 
-    subject.set("bar", owner)
-    subject.set("bar", owner, target)
-    class << owner; def id; 20; end; end
-    subject.set("bar", owner, StubTarget)
-    
-    (subject.permissions("bar") - ["15", "15/StubTarget/10", "20/StubTarget"]).should be_empty
-    subject.permissions("lala").should be_empty
-  end 
-  
   it "should allow to fetch whole list of roles" do 
     subject.set("foo", owner)
     subject.set("bar", owner)

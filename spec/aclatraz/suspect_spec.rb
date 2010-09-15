@@ -12,9 +12,9 @@ describe "Aclatraz suspect" do
     subject.roles.assign(:foobar2, StubTarget)
     subject.roles.assign(:foobar3, target) 
     
-    Aclatraz.store.permissions(:foobar1).should include("10")
-    Aclatraz.store.permissions(:foobar2).should include("10/StubTarget")
-    Aclatraz.store.permissions(:foobar3).should include("10/StubTarget/10")
+    subject.roles.has?(:foobar1).should be_true
+    subject.roles.has?(:foobar2, StubTarget).should be_true
+    subject.roles.has?(:foobar3, target).should be_true
   end
   
   it "2: should properly check given permissions" do 

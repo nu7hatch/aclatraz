@@ -26,10 +26,6 @@ module Aclatraz
         end
       end
       
-      def permissions(role)
-        @backend.smembers(role.to_s)
-      end
-      
       def roles(member=nil)
         if member
           @backend.hkeys(MEMBER_ROLES_KEY % member.id.to_s)
