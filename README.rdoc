@@ -38,12 +38,12 @@ Now your suspect have few methods which will helps you manage it permissions.
 
 ACLatraz distinguishes between three types of roles:
 
-* <b>global</b> - simple roles, which are most commonly assigned to many users. 
+* <b>global:</b> simple roles, which are most commonly assigned to many users. 
   We can say that they are kind of groups. Global roles are eg. _guest_, _admin_, 
   _customer_.
-* <b>class-related</b> - roles that affects management of a particular class. 
+* <b>class-related:</b> roles that affects management of a particular class. 
   Example of this kind of role can be *manager* of +Pages+, *admin* of +Products+, etc.  
-* <b>object-related</b> - roles that affects management of an object. For example 
+* <b>object-related:</b> roles that affects management of an object. For example 
   *author* of <em>specified page</em>, *owner* of <em>specified product</em>, etc. 
 
 Now there is two ways for managing roles. You can use +#roles+ or semanticaly 
