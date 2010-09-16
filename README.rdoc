@@ -54,8 +54,8 @@ look like <tt>#is</tt> and <tt>#is_not</tt> proxies.
 ==== Assigning
 
 To add given role you can use <tt>#assign</tt> method from <tt>#roles</tt> proxy 
-or use semantic shortcuts. Semantic shortcut have to ends with <b>!</b>, and can have
-optional suffixes: <em>_on</em>, <em>_of</em>, <em>_at</em>, <em>_for</em>,
+or use semantic shortcuts. Semantic shortcut have to ends with <b>"!"</b>, and 
+can have optional suffixes: <em>_on</em>, <em>_of</em>, <em>_at</em>, <em>_for</em>,
 <em>_in</em>, <em>_by</em>. Take a look at the following examples to get 
 everything to be clear: 
 
@@ -82,7 +82,7 @@ Using #roles proxy you can call <tt>#has?</t> method on it, eg:
   @account.roles.has?(:responsible, Foo)     # => true
   @account.roles.has?(:author, Page.find(15) # => true
 
-With semantic shortcuts your method name have to ends with <b>?</b> and can contain 
+With semantic shortcuts your method name have to ends with <b>"?"</b> and can contain 
 any of suffixes listed above, eg:
 
   @account.is.admin?                   # => true
@@ -101,7 +101,7 @@ To unassign given role from object use <tt>#delete</tt> method from <tt>#roles</
   @account.roles.delete(:admin)
   @account.roles.delete(:responsible, Foo)
   
-Another way is to use semantic negation, where method name have to ends with <b>!</b> 
+Another way is to use semantic negation, where method name have to ends with <b>"!"</b> 
 and can contain one of allowed suffixes, eg:
 
   @account.is_not.admin!
