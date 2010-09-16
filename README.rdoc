@@ -46,7 +46,7 @@ ACLatraz distinguishes between three types of roles:
 * <b>object-related:</b> roles that affects management of an object. For example 
   *author* of <em>specified page</em>, *owner* of <em>specified product</em>, etc. 
 
-Now there is two ways for managing roles. You can use +#roles+ or semanticaly 
+Now there is two ways for managing roles. You can use <tt>#roles</tt> or semanticaly 
 look like <tt>#is</tt> and <tt>#is_not</tt> proxies. 
 
 ==== Assigning
