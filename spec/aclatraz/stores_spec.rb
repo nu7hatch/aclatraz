@@ -17,9 +17,9 @@ STORE_SPECS = proc do
   end
   
   it "should properly delete given permission" do
-    subject.set("foo", owner)
+    subject.set("bar", owner)
     subject.set("bar", owner, StubTarget)
-    subject.set("bla", owner, target)
+    subject.set("bar", owner, target)
     
     subject.delete("bar", owner)
     subject.delete("bar", owner, StubTarget)
