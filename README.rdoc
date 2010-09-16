@@ -85,12 +85,12 @@ any of suffixes listed above, eg:
 
   @account.is.admin?                   # => true
   @account.is.responsible_for?(Foo)    # => true
-  @account.is.author_of(Page.find(15)) # => true
+  @account.is.author_of?(Page.find(15)) # => true
 
 Few more examples with semantic negation:
 
   @account.is_not.admin?               # => false
-  @account.is_not.responsible_for(Foo) # => false
+  @account.is_not.responsible_for?(Foo) # => false
 
 You can also check permissions using nice block-style syntax. The code inside
 the block will be executed only when object has given role. An quick example:
@@ -110,7 +110,7 @@ Another way is to use semantic negation, where method name have to ends with <b>
 and can contain one of allowed suffixes, eg:
 
   @account.is_not.admin!
-  @account.is_not.author_of(Page.find(15))
+  @account.is_not.author_of?(Page.find(15))
   
 == Guards
 
