@@ -26,7 +26,7 @@ Suspects are objects which we can assign specific permissions. There is only
 one condition which object have to meet to be suspect - it must have the #id
 method which returns an unique identifier after which we will be able to
 reference this object. To enable suspect behaviour you have to include the
-+Aclatraz::Suspect+ module to specified class, eg:
+<tt>Aclatraz::Suspect</tt> module to specified class, eg:
 
   class Account < ActiveRecord::Base
     include Aclatraz::Suspect
@@ -38,23 +38,23 @@ Now your suspect have few methods which will helps you manage it permissions.
 
 ACLatraz distinguishes between three types of roles:
 
-*global* :: 
+<b>global</b> :: 
   simple roles, which are most commonly assigned to many users. We can say that 
   they are kind of groups. Global roles are eg. _guest_, _admin_, _customer_.
-*class-related* :: 
+<b>class-related</b> :: 
   roles that affects management of a particular class. Example of this kind
   of role can be *manager* of +Pages+, *admin* of +Products+, etc.  
-*object-related* ::
+<b>object-related</b> ::
   roles that affects management of an object. For example *author* of 
-  _specified page_, *owner* of _specified product_, etc. 
+  <em>specified page</em>, *owner* of <em>specified product</em>, etc. 
 
 Now there is two ways for managing roles. You can use +#roles+ or semanticaly 
-look like +#is+ and +#is_not+ proxies. 
+look like <tt>#is</tt> and <tt>#is_not</tt> proxies. 
 
 ==== Assigning
 
-To add given role you can use +#assign+ method from +#roles+ proxy or use
-semantic shortcuts. Semantic shortcut have to ends with *!*, and can have
+To add given role you can use <tt>#assign</tt> method from <tt>#roles</tt> proxy 
+or use semantic shortcuts. Semantic shortcut have to ends with <b>!</b>, and can have
 optional suffixes: <em>_on</em>, <em>_of</em>, <em>_at</em>, <em>_for</em>,
 <em>_in</em>, <em>_by</em>. Take a look at the following examples to get 
 everything to be clear: 
@@ -67,22 +67,22 @@ everything to be clear:
   @account.roles.assign(:responsible, Foo) # or...
   @account.is.responsible_for!(Foo)
  
-...will assign to the account _responsible_ role related with Foo class. 
+...will assign to the account _responsible_ role related with +Foo+ class. 
 
   @account.roles.assign(:author, Page.find(15)) # or...
   @account.is.author_of!(Page.find(15))
   
-...will assign to the account _author_ role related with given page object. 
+...will assign to the account _author_ role related with given +Page+ object. 
 
 ==== Checking
 
-Using #roles proxy you can call +#has?+ method on it, eg: 
+Using #roles proxy you can call <tt>#has?</t> method on it, eg: 
 
   @account.roles.has?(:admin)                # => true
   @account.roles.has?(:responsible, Foo)     # => true
   @account.roles.has?(:author, Page.find(15) # => true
 
-With semantic shortcuts your method name have to ends with *?* and can contain 
+With semantic shortcuts your method name have to ends with <b>?</b> and can contain 
 any of suffixes listed above, eg:
 
   @account.is.admin?                   # => true
@@ -96,12 +96,12 @@ Few more examples with semantic negation:
 
 ==== Deleting
 
-To unassign given role from object use +#delete+ method from +#roles+, eg:
+To unassign given role from object use <tt>#delete</tt> method from <tt>#roles</tt>, eg:
 
   @account.roles.delete(:admin)
   @account.roles.delete(:responsible, Foo)
   
-Another way is to use semantic negation, where method name have to ends with *!* 
+Another way is to use semantic negation, where method name have to ends with <b>!</b> 
 and can contain one of allowed suffixes, eg:
 
   @account.is_not.admin!
@@ -110,8 +110,8 @@ and can contain one of allowed suffixes, eg:
 == Guards
 
 To enable access control in your for your objects you have to include to it the 
-+Aclatraz::Guard+ module. This module provides methods for defining and checking
-permissions of an suspected object. Take a look for this basic example:
+<tt>Aclatraz::Guard</tt> module. This module provides methods for defining and 
+checking permissions of an suspected object. Take a look for this basic example:
 
   class Foo
     include Aclatraz::Guard
@@ -122,14 +122,14 @@ permissions of an suspected object. Take a look for this basic example:
     end
   end 
  
-The +#suspects+ block is passing one argument - suspected object. When there is
-symbol given, like in example above, then will treat #account instance method
-result as suspected object. When you will use string, eg:
+The <tt>#suspects</tt> block is passing one argument - suspected object. When 
+there is symbol given, like in example above, then will treat <tt>#account</tt>
+instance method result as suspected object. When you will use string, eg:
 
   suspects "account" do # or suspects "@account" do ...
   
-... it will treat @account instance variable as suspect. You can also specify 
-suspected object directly, eg:
+... it will treat <tt>@account</tt> instance variable as suspect. You can also 
+specify suspected object directly, eg:
 
   account = Account.find(1)
   suspects account do # ...
@@ -137,8 +137,8 @@ suspected object directly, eg:
 === Allowing and denying access
 
 As you probably noticed, there is two methods responsible for access control, 
-namely +#allow+ and +#deny+. As its argument you can pass simple name of role
-or permission statement, eg:
+namely <tt>#allow</tt> and <tt>#deny</tt>. As its argument you can pass simple 
+name of role or permission statement, eg:
 
   allow :admin
   deny :guest
@@ -146,8 +146,8 @@ or permission statement, eg:
   allow :author_of => "@page"  
  
 Like you see, you can easy specify access for each kind of role. The object-related
-permissions behaviour is similar to +#suspects+ method. When given related object
-is string then applies permissions for an instance variable, when symbol then 
+permissions behaviour is similar to <tt>#suspects</tt> method. When given related 
+object is string then applies permissions for an instance variable, when symbol then 
 applies it for instance method, otherwise directly for given object.
 
 === Actions
@@ -172,9 +172,10 @@ Obviously all actions inherits all permissions from main block.
  
 === Authorizing
 
-The +Aclatraz::Guards+ module provides +#guard!+ method for checking permissions.
-When suspected object don't have any of allowed permissions or have any of defnied
-then it will raise the +Aclatraz::AccessDenied+ error. Here's an comprehensive example:
+The <tt>Aclatraz::Guards</tt> module provides <tt>#guard!</tt> method for checking 
+permissions. When suspected object don't have any of allowed permissions or have 
+any of defnied then it will raise the <tt>Aclatraz::AccessDenied</tt> error. 
+Here's an comprehensive example:
 
   class Foo
     suspects "@account" do 
@@ -215,7 +216,7 @@ then it will raise the +Aclatraz::AccessDenied+ error. Here's an comprehensive e
   end
  
 There is also a very nice feature. You can define additional permissions directly
-in +#guard!+ block, eg:
+in <tt>#guard!</tt> block, eg:
 
   def foo
     guard! do
@@ -253,8 +254,8 @@ in each child class you can freely modify permissions. Here's an example:
   
 === Aliases
 
-If you prefer you can use aliases: +#access_control+ instead of +#suspects+ and 
-+#authorize!+ instead of +#guard!+.   
+If you prefer you can use aliases: <tt>#access_control</tt> instead of 
+<tt>#suspects</tt> and <tt>#authorize!</tt> instead of <tt>#guard!</tt>.   
 
 == Note on Patches/Pull Requests
  
