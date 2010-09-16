@@ -6,7 +6,7 @@
 * Added #init to Aclatraz
 * Added Aclatraz::Suspect::Roles
 * Added #roles proxy instead of #assign_role!, #delete_role!, #has_role? in Aclatraz::Suspect
-* Inline permissions in #guard!
+* Defining permissions in #guard! block
 
 * README documentation
 * Code documentation

@@ -3,6 +3,4 @@
 * TokyoCabinet store
 * Memcached store
 * Think that the main roles should have an impact on object/class ownerships
-* Readme
-* Examples
-* Defininig permissions in guard! block
+* More Examples
