@@ -95,21 +95,33 @@ module Aclatraz
       
       # Check if current suspect have permissions to execute following code.
       # If suspect hasn't required permissions, or access for any of his roles 
-      # is denied then raises +Aclatraz::AccessDenied+ error.
-      def guard!(*actions)
+      # is denied then raises +Aclatraz::AccessDenied+ error. You can also specify
+      # additional permission inside given block:
+      #
+      #   guard! do 
+      #     deny :foo
+      #     allow :bar
+      #   end
+      def guard!(*actions, &block)
         acl = Aclatraz.acl[self.class.name] or raise UndefinedAccessControlList, "No ACL for #{self.class.name} class"
         suspect.respond_to?(:acl_suspect?)  or raise Aclatraz::InvalidSuspect, "Invalid ACL suspect: #{suspect.inspect}"
         authorized = false
         permissions = Dictionary.new
         actions.unshift(:_)
-        
+
+        if block_given?
+          aname = "#{__FILE__}:#{__LINE__}"
+          acl.on(aname, &block)
+          actions.push(aname)
+        end
+
         actions.each do |action| 
           acl.actions[action].permissions.each_pair do |key, value|     
             permissions.delete(key)
             permissions.push(key, value)
           end
         end
-        
+  
         permissions.each do |permission, allow|
           if permission == true
             authorized = allow ? true : false

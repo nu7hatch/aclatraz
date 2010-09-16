@@ -107,6 +107,8 @@ describe "Aclatraz guard" do
     lambda { guarded.guard!(:bar, :deny_all, :bla) }.should raise_error(Aclatraz::AccessDenied)
     suspect.is.role2!(guarded.target)
     lambda { guarded.guard!(:bar, :deny_all, :bla) }.should_not raise_error(Aclatraz::AccessDenied)
+    
+    lambda { guarded.guard! { deny :role2 => :target } }.should raise_error(Aclatraz::AccessDenied)
   end
   
   it "when invalid permission given then #guard! should raise InvalidPermission error" do 
