@@ -214,6 +214,17 @@ then it will raise the +Aclatraz::AccessDenied+ error. Here's an comprehensive e
     end
   end
  
+There is also a very nice feature. You can define additional permissions directly
+in +#guard!+ block, eg:
+
+  def foo
+    guard! do
+      allow :foo
+      deny :bar
+    end
+    # ...
+  end
+ 
 === Inheritance
 
 ACLatraz access control supports inheritance. It means that when you define 
