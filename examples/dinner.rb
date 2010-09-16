@@ -1,8 +1,7 @@
-require "rubygems"
-require "aclatraz"
-require "activerecord"
-
-Aclatraz.init :redis, "http://localhost:6739/0"
+# == Dinner example.
+# 
+# Don't forget to initialize ACLatraz datastore and your ActiveRecord 
+# connection with database.
 
 class Person < ActiveRecord::Base
   include Aclatraz::Suspect

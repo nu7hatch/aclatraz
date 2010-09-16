@@ -5,94 +5,245 @@ powered by fast key value stores like Redis or TokyoCabinet.
 
 == Installation
 
-You can install ACLatraz via rubygems:
+You can simple install ACLatraz via rubygems:
 
   sudo gem install aclatraz
   
-== Basic usage
+== Configuration
 
-First of all you have to initialize ACL system with specified datastore. Here's
-an example with Redis:
+Before you'll start play with access controll in your apps you have to 
+correctly configure datastore for permissions (at this moment ACLatraz
+is only supporting Redis database as storage). Redis datastore configuration
+looks very simple:
 
   Aclatraz.init :redis, "redis://localhost:6379/0"
   
-Then you have to define your suspects, eg.  
+Remember that using Redis, you should specify database dedicated only for ACLatraz.   
+
+== Suspects
+
+Suspects are objects which we can assign specific permissions. There is only 
+one condition which object have to meet to be suspect - it must have the #id
+method which returns an unique identifier after which we will be able to
+reference this object. To enable suspect behaviour you have to include the
++Aclatraz::Suspect+ module to specified class, eg:
 
   class Account < ActiveRecord::Base
     include Aclatraz::Suspect
   end
   
-Now your suspect have few methods which will helps you manage permissions:
+Now your suspect have few methods which will helps you manage it permissions.
 
-  @account = Account.create
-  @account.roles.has?(:foo)    # => false
-  @account.roles.assign(foo)   
-  @account.roles.has?(:foo)    # => true
-  @account.roles.delete(foo)   
+=== Managing roles
+
+ACLatraz distinguishes between three types of roles:
+
+*global* :: 
+  simple roles, which are most commonly assigned to many users. We can say that 
+  they are kind of groups. Global roles are eg. _guest_, _admin_, _customer_.
+*class-related* :: 
+  roles that affects management of a particular class. Example of this kind
+  of role can be *manager* of +Pages+, *admin* of +Products+, etc.  
+*object-related* ::
+  roles that affects management of an object. For example *author* of 
+  _specified page_, *owner* of _specified product_, etc. 
+
+Now there is two ways for managing roles. You can use +#roles+ or semanticaly 
+look like +#is+ and +#is_not+ proxies. 
+
+==== Assigning
+
+To add given role you can use +#assign+ method from +#roles+ proxy or use
+semantic shortcuts. Semantic shortcut have to ends with *!*, and can have
+optional suffixes: <em>_on</em>, <em>_of</em>, <em>_at</em>, <em>_for</em>,
+<em>_in</em>, <em>_by</em>. Take a look at the following examples to get 
+everything to be clear: 
+
+  @account.roles.assign(:admin) # or ...
+  @account.is.admin!
   
-  @account.is.foo?             # => false
-  @account.is_not.foo?         # => true
-  @account.is.foo!             # shortcut for roles.assign(:foo)
-  @account.is_not.foo!         # shortcut for roles.delete(:foo)
+...will assign *global* _admin_ role to the account.
+ 
+  @account.roles.assign(:responsible, Foo) # or...
+  @account.is.responsible_for!(Foo)
+ 
+...will assign to the account _responsible_ role related with Foo class. 
+
+  @account.roles.assign(:author, Page.find(15)) # or...
+  @account.is.author_of!(Page.find(15))
   
-Last step is create you access control list and set guards:
+...will assign to the account _author_ role related with given page object. 
+
+==== Checking
+
+Using #roles proxy you can call +#has?+ method on it, eg: 
+
+  @account.roles.has?(:admin)                # => true
+  @account.roles.has?(:responsible, Foo)     # => true
+  @account.roles.has?(:author, Page.find(15) # => true
+
+With semantic shortcuts your method name have to ends with *?* and can contain 
+any of suffixes listed above, eg:
+
+  @account.is.admin?                   # => true
+  @account.is.responsible_for?(Foo)    # => true
+  @account.is.author_of(Page.find(15)) # => true
+
+Few more examples with semantic negation:
+
+  @account.is_not.admin?               # => false
+  @account.is_not.responsible_for(Foo) # => false
+
+==== Deleting
+
+To unassign given role from object use +#delete+ method from +#roles+, eg:
+
+  @account.roles.delete(:admin)
+  @account.roles.delete(:responsible, Foo)
+  
+Another way is to use semantic negation, where method name have to ends with *!* 
+and can contain one of allowed suffixes, eg:
+
+  @account.is_not.admin!
+  @account.is_not.author_of(Page.find(15))
+  
+== Guards
+
+To enable access control in your for your objects you have to include to it the 
++Aclatraz::Guard+ module. This module provides methods for defining and checking
+permissions of an suspected object. Take a look for this basic example:
 
   class Foo
     include Aclatraz::Guard
-    
+
     suspects :account do 
-      allow all
-      
-      on :manage do 
-        allow :root
-        allow :manager
-      end
-      
-      on :delete do 
-        deny :manager
-        allow :owner_of => "@project" 
-      end
+      deny all # notice that it's a method, not symbol
+      allow :admin
+    end
+  end 
+ 
+The +#suspects+ block is passing one argument - suspected object. When there is
+symbol given, like in example above, then will treat #account instance method
+result as suspected object. When you will use string, eg:
+
+  suspects "account" do # or suspects "@account" do ...
+  
+... it will treat @account instance variable as suspect. You can also specify 
+suspected object directly, eg:
+
+  account = Account.find(1)
+  suspects account do # ...
+  
+=== Allowing and denying access
+
+As you probably noticed, there is two methods responsible for access control, 
+namely +#allow+ and +#deny+. As its argument you can pass simple name of role
+or permission statement, eg:
+
+  allow :admin
+  deny :guest
+  allow :responsible_for => Foo
+  allow :author_of => "@page"  
+ 
+Like you see, you can easy specify access for each kind of role. The object-related
+permissions behaviour is similar to +#suspects+ method. When given related object
+is string then applies permissions for an instance variable, when symbol then 
+applies it for instance method, otherwise directly for given object.
+
+=== Actions
+
+In your access control block you can specify separate action with its own 
+permissions, eg:
+
+  suspects :account do 
+    deny all
+    allow :admin
+    
+    action :manage do 
+      allow :responsible_for => Foo
     end
     
-    # The #suspects method allows to pass String, Symbol or Object as suspect. 
-    # When String given (eg. "account" or "@account") then value of given 
-    # instance variable will be treated as suspect. When Symbol given, then 
-    # system will take value from given instance method. Otherwise given object
-    # will be treated as suspect if possible. 
-    #
-    # Similar situation is with permission arguments. To #allow and #deny 
-    # methods you can pass symbol or hash. Symbol given represents
-    # single role, the hash represents ownership of assigned object or class.
-    # Assigned object declaration behaves the same as suspects' one. 
-    
-    def account
-      @account ||= Account.find(ENV['MYAPP_ACCOUNT'])
-    end
-    
-    def index
-      guard!
-      # ... everybody are allowed to see this
-    end
-    
-    def create
-      guard!(:manage)
-      # ... only managers and root will see this
-    end
-    
-    def delete(id)
-      @product = Product.find(id)
-      guard!(:manage, :delete)
-      # ... only root or or @product owner will see this
-    end
-    
-    def product(id)
-      @product.find(id)
-      account.is.owner_of?(@product) do
-        return @product
-      end
-      return nil
+    action :delete do 
+      allow :author_of => "@page"
     end
   end
+  
+Obviously all actions inherits all permissions from main block.  
+ 
+=== Authorizing
+
+The +Aclatraz::Guards+ module provides +#guard!+ method for checking permissions.
+When suspected object don't have any of allowed permissions or have any of defnied
+then it will raise the +Aclatraz::AccessDenied+ error. Here's an comprehensive example:
+
+  class Foo
+    suspects "@account" do 
+      deny all
+      allow :admin
+      action :foo
+        allow :foo
+      end
+      action :bar
+        allow :bar
+        deny :admin
+      end
+    end
+
+    def initialize(account)
+      @account = account
+    end
+    
+    def simple
+      guard!
+      # only for accounts with :admin role...
+    end
+    
+    def foo
+      guard!(:foo)
+      # only for accounts with :admin or :foo role...
+    end
+    
+    def bar
+      guard!(:bar)
+      # only for accounts with :bar role...
+    end
+    
+    def foobar
+      guard!(:foo, :bar)
+      # only for accounts with :foo or :bar, and mandatory without :admin role...
+    end
+  end
+ 
+=== Inheritance
+
+ACLatraz access control supports inheritance. It means that when you define 
+your ACL in parent class it will be applied also for all child classes. Obviously 
+in each child class you can freely modify permissions. Here's an example:  
+
+  class Foo 
+    suspects :account do
+      deny all
+      allow :admin
+    end
+  end
+
+  class Bar < Foo
+    suspects do 
+      # notice, that in child class don't have to again specify suspect...
+      allow :foobar
+    end
+  end  
+  
+  class Spam < Foo
+    suspects :egg do 
+      # but of course you can specify different suspect than in parent class...    
+    end  
+  end
+  
+=== Aliases
+
+If you prefer you can use aliases: +#access_control+ instead of +#suspects+ and 
++#authorize!+ instead of +#guard!+.   
 
 == Note on Patches/Pull Requests
  
