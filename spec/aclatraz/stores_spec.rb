@@ -60,4 +60,13 @@ describe "Aclatraz" do
     
     class_eval &STORE_SPECS
   end
+
+  describe "Riak store" do 
+    before(:all) { @riak = Thread.new { `riak start` } }
+    after(:all) { @riak.exit! }
+    subject { Aclatraz.init(:riak) }
+    before(:each) { subject.clear }
+    
+    class_eval &STORE_SPECS
+  end
 end
