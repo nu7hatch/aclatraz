@@ -1,6 +1,8 @@
-== Version 0.1.1 (Unreleased)
+== Version 0.1.1
 
 * Riak store [Thanks seven1m]
+* Optimized Redis store
+* Fixed tests
 
 == Version 0.1.0
 
