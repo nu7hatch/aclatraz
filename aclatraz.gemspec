@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{aclatraz}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kriss 'nu7hatch' Kowalik"]
-  s.date = %q{2010-09-16}
+  s.date = %q{2010-09-17}
   s.description = %q{      Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
       powered by fast key value stores like Redis or TokyoCabinet.
 }
@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
      "lib/aclatraz/helpers.rb",
      "lib/aclatraz/store.rb",
      "lib/aclatraz/store/redis.rb",
+     "lib/aclatraz/store/riak.rb",
      "lib/aclatraz/suspect.rb",
      "spec/aclatraz/acl_spec.rb",
      "spec/aclatraz/guard_spec.rb",
@@ -71,17 +72,20 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_development_dependency(%q<mocha>, [">= 0.9"])
       s.add_development_dependency(%q<redis>, ["~> 2.0"])
+      s.add_development_dependency(%q<riak-client>, ["~> 0.8"])
       s.add_runtime_dependency(%q<dictionary>, ["~> 1.0"])
     else
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_dependency(%q<mocha>, [">= 0.9"])
       s.add_dependency(%q<redis>, ["~> 2.0"])
+      s.add_dependency(%q<riak-client>, ["~> 0.8"])
       s.add_dependency(%q<dictionary>, ["~> 1.0"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
     s.add_dependency(%q<mocha>, [">= 0.9"])
     s.add_dependency(%q<redis>, ["~> 2.0"])
+    s.add_dependency(%q<riak-client>, ["~> 0.8"])
     s.add_dependency(%q<dictionary>, ["~> 1.0"])
   end
 end
