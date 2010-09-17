@@ -2,6 +2,7 @@ require 'spec_helper'
 
 STORE_SPECS = proc do
   it "should properly assign given roles to owner and check permissions" do
+    subject.clear
     subject.set("foo", owner)
     subject.check("foo", owner).should be_true
     
@@ -17,6 +18,7 @@ STORE_SPECS = proc do
   end
   
   it "should properly delete given permission" do
+    subject.clear
     subject.set("foo", owner)
     subject.set("bar", owner, StubTarget)
     subject.set("bla", owner, target)
@@ -35,6 +37,7 @@ STORE_SPECS = proc do
     subject.set("bar", owner)
     subject.set("bla", owner)
     
+    subject.roles.should_not be_empty
     (subject.roles - ["foo", "bar", "bla"]).should be_empty 
   end
   
@@ -43,8 +46,8 @@ STORE_SPECS = proc do
     subject.set("bar", owner)
     subject.set("bla", owner)
     
-    (subject.roles(owner.id) - ["foo", "bar", "bla"]).should be_empty
-    subject.roles(33).should be_empty
+    subject.roles(owner).should_not be_empty
+    (subject.roles(owner) - ["foo", "bar", "bla"]).should be_empty
   end
 end
 
@@ -56,7 +59,6 @@ describe "Aclatraz" do
     before(:all) { @redis = Thread.new { `redis-server` } }
     after(:all) { @redis.exit! }
     subject { Aclatraz.init(:redis, "redis://localhost:6379/0") }
-    before(:each) { subject.clear }
     
     class_eval &STORE_SPECS
   end
@@ -65,7 +67,6 @@ describe "Aclatraz" do
     before(:all) { @riak = Thread.new { `riak start` } }
     after(:all) { @riak.exit! }
     subject { Aclatraz.init(:riak, "roles") }
-    before(:each) { subject.clear }
     
     class_eval &STORE_SPECS
   end

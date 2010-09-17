@@ -21,32 +21,33 @@ module Aclatraz
         @backend = ::Riak::Client.new(*args).bucket(bucket_name)
       end
 
-      def set(role, owner, object=nil)
-        obj = @backend.get_or_new(pack(role.to_s, owner.id, object))
+      def set(role, member, object=nil)
+        obj = @backend.new(pack(role.to_s, member_id(member), object))
         obj.content_type = "text/plain"
-        obj.data = 1
+        obj.data = "1"
         obj.store
       end
 
       def roles(member=nil)
         roles = []
+        # Also this can be a little bit slow...
         @backend.keys.each do |key|
-          perm = unpack(@backend.get(key)) rescue next
-          if perm.size < 3 && (!member || (member && perm[0] == member.id.to_s))
-            roles.push(role)
-          end  
+          @backend.exists?(key) ? perm = unpack(key) : next
+          if perm.size == 2 && (!member || (member && perm[0].to_s == member_id(member)))
+            roles.push(perm[1])
+          end
         end
-        roles.uniq
+        roles.compact.uniq
       end
 
-      def check(role, owner, object=nil)
-        @backend.exists?(pack(role.to_s, owner.id, object)) or begin
-          object && !object.is_a?(Class) ? check(role, owner, object.class) : false
+      def check(role, member, object=nil)
+        @backend.exists?(pack(role.to_s, member_id(member), object)) or begin
+          object && !object.is_a?(Class) ? check(role, member, object.class) : false
         end
       end
 
-      def delete(role, owner, object=nil)
-        @backend.delete(pack(role.to_s, owner.id, object))
+      def delete(role, member, object=nil)
+        @backend.delete(pack(role.to_s, member_id(member), object))
       end
 
       def clear
@@ -62,14 +63,14 @@ module Aclatraz
       #   pack("foo", 10)               # => "10/foo"
       #   pack("foo", 10, "FooClass")   # => "10/foo/FooClass"
       #   pack("foo", 10, FooClass.new) # => "10/foo/FooClass/{foo_object_ID}"
-      def pack(role, owner, object=nil)
+      def pack(role, member, object=nil)
         case object
         when nil
-          "#{owner}/#{role}"
+          "#{member}/#{role}"
         when Class 
-          "#{owner}/#{role}/#{object.name}"
+          "#{member}/#{role}/#{object.name}"
         else 
-          "#{owner}/#{role}/#{object.class.name}/#{object.id}"
+          "#{member}/#{role}/#{object.class.name}/#{object.id}"
         end
       end
       

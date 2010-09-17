@@ -1,26 +1,16 @@
 module Aclatraz
   module Helpers
-    # Pack given permission data.
-    #
-    #   pack(10)               # => "10"
-    #   pack(10, "FooClass")   # => "10/FooClass"
-    #   pack(10, FooClass.new) # => "10/FooClass/{foo_object_ID}"
-    def pack(owner, object=nil)
-      case object
-      when nil
-        "#{owner}"
-      when Class 
-        "#{owner}/#{object.name}"
-      else 
-        "#{owner}/#{object.class.name}/#{object.id}"
-      end
-    end
-    
     # Given underscored word, returns camelized version of it. 
     #
     #   camelize(foo_bar_bla) # => "FooBarBla"
     def camelize(str)
       str.split('_').map {|w| w.capitalize}.join
+    end
+    
+    # If given object is kind of string or integer then returns it, otherwise
+    # it tries to return its ID.
+    def member_id(member)
+      member.is_a?(String) || member.is_a?(Integer) ? member.to_s : member.id.to_s
     end
   end # Helpers
 end # Aclatraz
