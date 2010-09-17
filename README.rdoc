@@ -83,13 +83,13 @@ Using #roles proxy you can call <tt>#has?</t> method on it, eg:
 With semantic shortcuts your method name have to ends with <b>"?"</b> and can contain 
 any of suffixes listed above, eg:
 
-  @account.is.admin?                   # => true
-  @account.is.responsible_for?(Foo)    # => true
+  @account.is.admin?                    # => true
+  @account.is.responsible_for?(Foo)     # => true
   @account.is.author_of?(Page.find(15)) # => true
 
 Few more examples with semantic negation:
 
-  @account.is_not.admin?               # => false
+  @account.is_not.admin?                # => false
   @account.is_not.responsible_for?(Foo) # => false
 
 You can also check permissions using nice block-style syntax. The code inside
@@ -110,7 +110,7 @@ Another way is to use semantic negation, where method name have to ends with <b>
 and can contain one of allowed suffixes, eg:
 
   @account.is_not.admin!
-  @account.is_not.author_of?(Page.find(15))
+  @account.is_not.author_of!(Page.find(15))
   
 == Guards
 
@@ -139,7 +139,7 @@ specify suspected object directly, eg:
   account = Account.find(1)
   suspects account do # ...
   
-=== Allowing and denying access
+=== Setting up permissions
 
 As you probably noticed, there is two methods responsible for access control, 
 namely <tt>#allow</tt> and <tt>#deny</tt>. As its argument you can pass simple 

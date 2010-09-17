@@ -17,13 +17,13 @@ STORE_SPECS = proc do
   end
   
   it "should properly delete given permission" do
-    subject.set("bar", owner)
+    subject.set("foo", owner)
     subject.set("bar", owner, StubTarget)
-    subject.set("bar", owner, target)
+    subject.set("bla", owner, target)
     
-    subject.delete("bar", owner)
+    subject.delete("foo", owner)
     subject.delete("bar", owner, StubTarget)
-    subject.delete("bar", owner, target)
+    subject.delete("bla", owner, target)
     
     subject.check("bar", owner).should be_false
     subject.check("bar", owner, StubTarget).should be_false
@@ -64,7 +64,7 @@ describe "Aclatraz" do
   describe "Riak store" do 
     before(:all) { @riak = Thread.new { `riak start` } }
     after(:all) { @riak.exit! }
-    subject { Aclatraz.init(:riak) }
+    subject { Aclatraz.init(:riak, "roles") }
     before(:each) { subject.clear }
     
     class_eval &STORE_SPECS
