@@ -1,3 +1,9 @@
+== Version 0.1.2
+
+* Added possibility to passing connection objects in Aclatraz#init
+* Tested Aclatraz#init with Redis hash options given
+* Minor bugfixes
+
 == Version 0.1.1
 
 * Riak store [Thanks seven1m]

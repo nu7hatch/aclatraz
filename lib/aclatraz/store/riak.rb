@@ -18,7 +18,11 @@ module Aclatraz
       include Aclatraz::Helpers
 
       def initialize(bucket_name, *args) # :nodoc:
-        @backend = ::Riak::Client.new(*args).bucket(bucket_name)
+        case args.first when ::Riak::Client
+          @backend = args.first.bucket(bucket_name)
+        else
+          @backend = ::Riak::Client.new(*args).bucket(bucket_name)
+        end
       end
 
       def set(role, member, object=nil)

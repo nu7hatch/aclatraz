@@ -55,19 +55,34 @@ describe "Aclatraz" do
   let(:owner) { StubOwner.new }
   let(:target) { StubTarget.new }
   
-  describe "Redis store" do 
-    before(:all) { @redis = Thread.new { `redis-server` } }
-    after(:all) { @redis.exit! }
+  describe "for Redis store" do 
     subject { Aclatraz.init(:redis, "redis://localhost:6379/0") }
     
     class_eval &STORE_SPECS
+    
+    it "should respect persistent connection given on initalize" do 
+      Aclatraz.instance_variable_set("@store", nil)
+      Aclatraz.init(:redis, Redis.new("redis://localhost:6379/0"))
+      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Redis)
+      Aclatraz.store.instance_variable_get('@backend').ping.should be_true
+    end
+    
+    it "shouls respect redis hash options given in init" do 
+      Aclatraz.instance_variable_set("@store", nil)
+      Aclatraz.init(:redis, :url => "redis://localhost:6379/0")
+      Aclatraz.store.instance_variable_get('@backend').ping.should be_true
+    end 
   end
 
-  describe "Riak store" do 
-    before(:all) { @riak = Thread.new { `riak start` } }
-    after(:all) { @riak.exit! }
+  describe "for Riak store" do 
     subject { Aclatraz.init(:riak, "roles") }
     
     class_eval &STORE_SPECS
+    
+    it "should respect persistent connection given on initalize" do 
+      Aclatraz.instance_variable_set("@store", nil)
+      Aclatraz.init(:riak, "roles", ::Riak::Client.new)
+      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Riak::Bucket)
+    end
   end
 end

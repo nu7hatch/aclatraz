@@ -1,5 +1,6 @@
 begin
   require 'redis'
+  require 'redis/distributed'
 rescue LoadError
   raise "You must install the redis gem to use the Redis store"
 end
@@ -21,7 +22,11 @@ module Aclatraz
       MEMBER_ROLES = "member.%s.roles"
       
       def initialize(*args) # :nodoc:
-        @backend = ::Redis.new(*args)
+        case args.first when ::Redis, ::Redis::Distributed
+          @backend = args.first 
+        else
+          @backend = ::Redis.new(*args)
+        end
       end
 
       def set(role, member, object=nil)
