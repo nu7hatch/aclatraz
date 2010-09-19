@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{aclatraz}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kriss 'nu7hatch' Kowalik"]
-  s.date = %q{2010-09-17}
+  s.date = %q{2010-09-19}
   s.description = %q{      Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
       powered by fast key value stores like Redis or TokyoCabinet.
 }
