@@ -44,10 +44,10 @@ ns = [1000, 2000, 5000, 10000]
 ns.each do |n|
   puts "#{n} times:"
   Benchmark.bm(10) do |bm| 
-    bm.report("Assign:") { n.times {|x| $account.assign_role!("foo#{x}") } }
-    bm.report("Check:")  { n.times {|x| $account.has_role?("foo#{x}") } }
+    bm.report("Assign:") { n.times {|x| $account.roles.assign("foo#{x}") } }
+    bm.report("Check:")  { n.times {|x| $account.roles.has?("foo#{x}") } }
     bm.report("Guard:")  { n.times {|x| $foo.test } }
-    bm.report("Delete:") { n.times {|x| $account.delete_role!("foo#{x}") } }
+    bm.report("Delete:") { n.times {|x| $account.roles.delete("foo#{x}") } }
   end
   puts
 end
