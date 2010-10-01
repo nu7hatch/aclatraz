@@ -22,10 +22,10 @@ module Aclatraz
       MEMBER_ROLES = "member.%s.roles"
       
       def initialize(*args) # :nodoc:
-        case args.first when ::Redis, ::Redis::Distributed
-          @backend = args.first 
+        @backend = if args.first.respond_to?(:sadd)
+          args.first
         else
-          @backend = ::Redis.new(*args)
+          ::Redis.new(*args)
         end
       end
 
@@ -71,12 +71,12 @@ module Aclatraz
       def pack(role, object=nil)
         case object
         when nil
-          "#{role}"
+          [role]
         when Class 
-          "#{role}/#{object.name}"
+          [role, object.name]
         else 
-          "#{role}/#{object.class.name}/#{object.id}"
-        end
+          [role, object.class.name, object.id]
+        end.join("/")
       end
       
       # Unpack given permission data.
