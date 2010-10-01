@@ -1,9 +1,3 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-
-require "aclatraz"
-
-Aclatraz.init :redis, "redis://localhost:6379/0"
-
 class Account
   include Aclatraz::Suspect
   def id; 30; end
@@ -42,7 +36,7 @@ $foo = Foo.new
 ns = [1000, 2000, 5000, 10000]
 
 ns.each do |n|
-  puts "#{n} times:"
+  puts "#{n} operations:"
   Benchmark.bm(10) do |bm| 
     bm.report("Assign:") { n.times {|x| $account.roles.assign("foo#{x}") } }
     bm.report("Check:")  { n.times {|x| $account.roles.has?("foo#{x}") } }
