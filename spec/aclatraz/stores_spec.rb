@@ -69,7 +69,7 @@ describe "Aclatraz" do
     
     it "shouls respect redis hash options given in init" do 
       Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:redis, :url => "redis://localhost:6379/0")
+      Aclatraz.init(:redis, :url => "redis://localhost:6379/2")
       Aclatraz.store.instance_variable_get('@backend').ping.should be_true
     end 
   end
@@ -81,8 +81,20 @@ describe "Aclatraz" do
     
     it "should respect persistent connection given on initalize" do 
       Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:riak, "roles", ::Riak::Client.new)
+      Aclatraz.init(:riak, "roles", Riak::Client.new)
       Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Riak::Bucket)
+    end
+  end
+  
+  describe "for Cassandra store" do 
+    subject { Aclatraz.init(:cassandra, "Super1", "Keyspace1") }
+  
+    class_eval &STORE_SPECS
+  
+    it "should respect persistent connection given on initialize" do 
+      Aclatraz.instance_variable_set("@store", nil)
+      Aclatraz.init(:cassandra, "Super1", Cassandra.new("Keyspace1"))
+      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Cassandra)
     end
   end
 end
