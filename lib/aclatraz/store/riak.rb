@@ -25,33 +25,33 @@ module Aclatraz
         end
       end
 
-      def set(role, member, object=nil)
-        obj = @backend.new(pack(role.to_s, member_id(member), object))
+      def set(role, suspect, object=nil)
+        obj = @backend.new(pack(role.to_s, suspect_id(suspect), object))
         obj.content_type = "text/plain"
         obj.data = "1"
         obj.store
       end
 
-      def roles(member=nil)
+      def roles(suspect=nil)
         roles = []
         # Also this can be a little bit slow...
         @backend.keys.each do |key|
           @backend.exists?(key) ? perm = unpack(key) : next
-          if perm.size == 2 && (!member || (member && perm[0].to_s == member_id(member)))
+          if perm.size == 2 && (!suspect || (suspect && perm[0].to_s == suspect_id(suspect)))
             roles.push(perm[1])
           end
         end
         roles.compact.uniq
       end
 
-      def check(role, member, object=nil)
-        @backend.exists?(pack(role.to_s, member_id(member), object)) or begin
-          object && !object.is_a?(Class) ? check(role, member, object.class) : false
+      def check(role, suspect, object=nil)
+        @backend.exists?(pack(role.to_s, suspect_id(suspect), object)) or begin
+          object && !object.is_a?(Class) ? check(role, suspect, object.class) : false
         end
       end
 
-      def delete(role, member, object=nil)
-        @backend.delete(pack(role.to_s, member_id(member), object))
+      def delete(role, suspect, object=nil)
+        @backend.delete(pack(role.to_s, suspect_id(suspect), object))
       end
 
       def clear
@@ -60,27 +60,20 @@ module Aclatraz
         @backend.keys.each {|key| @backend.delete(key) }
       end
 
-      private
-
       # Pack given permission data.
       #
       #   pack("foo", 10)               # => "10/foo"
       #   pack("foo", 10, "FooClass")   # => "10/foo/FooClass"
       #   pack("foo", 10, FooClass.new) # => "10/foo/FooClass/{foo_object_ID}"
-      def pack(role, member, object=nil)
+      def pack(role, suspect, object=nil)
         case object
         when nil
-          [member, role]
+          [suspect, role]
         when Class 
-          [member, role, object.name]
+          [suspect, role, object.name]
         else 
-          [member, role, object.class.name, object.id]
+          [suspect, role, object.class.name, object.id]
         end.join("/")
-      end
-      
-      # Unpack given permission data.
-      def unpack(data)
-        data.to_s.split("/")
       end
     end # Riak
   end # Store
