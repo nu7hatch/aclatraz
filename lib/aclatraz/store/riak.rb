@@ -18,10 +18,10 @@ module Aclatraz
       include Aclatraz::Helpers
 
       def initialize(bucket_name, *args) # :nodoc:
-        case args.first when ::Riak::Client
-          @backend = args.first.bucket(bucket_name)
+        @backend = if args.first.respond_to?(:bucket)
+          args.first.bucket(bucket_name)
         else
-          @backend = ::Riak::Client.new(*args).bucket(bucket_name)
+          ::Riak::Client.new(*args).bucket(bucket_name)
         end
       end
 
@@ -70,12 +70,12 @@ module Aclatraz
       def pack(role, member, object=nil)
         case object
         when nil
-          "#{member}/#{role}"
+          [member, role]
         when Class 
-          "#{member}/#{role}/#{object.name}"
+          [member, role, object.name]
         else 
-          "#{member}/#{role}/#{object.class.name}/#{object.id}"
-        end
+          [member, role, object.class.name, object.id]
+        end.join("/")
       end
       
       # Unpack given permission data.
