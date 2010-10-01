@@ -48,7 +48,21 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-task :benchmark do 
+namespace :benchmark do 
+  $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
   require 'benchmark'
-  require File.dirname(__FILE__)+"/spec/alcatraz_bm"
+  require "aclatraz"
+  
+  task :redis do 
+    Aclatraz.init(:redis)
+    require File.dirname(__FILE__)+"/spec/alcatraz_bm"
+  end
+  task :cassandra do 
+    Aclatraz.init(:cassandra, "Super1", "Keyspace1")
+    require File.dirname(__FILE__)+"/spec/alcatraz_bm"
+  end
+  task :riak do
+    Aclatraz.init(:riak, "roles")
+    require File.dirname(__FILE__)+"/spec/alcatraz_bm"
+  end
 end
