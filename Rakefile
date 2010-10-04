@@ -17,6 +17,7 @@ begin
     gem.add_development_dependency "mocha", ">= 0.9"
     gem.add_development_dependency "redis", "~> 2.0"
     gem.add_development_dependency "riak-client", "~> 0.8"
+    gem.add_development_dependency "cassandra", "~> 0.8"
     gem.add_dependency "dictionary", "~> 1.0"
   end
   Jeweler::GemcutterTasks.new

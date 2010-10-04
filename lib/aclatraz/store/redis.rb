@@ -1,6 +1,5 @@
 begin
   require 'redis'
-  require 'redis/distributed'
 rescue LoadError
   raise "You must install the redis gem to use the Redis store"
 end
