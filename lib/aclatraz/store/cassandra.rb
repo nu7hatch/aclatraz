@@ -61,6 +61,6 @@ module Aclatraz
       def clear
         @backend.remove(@family, ROLES_KEY)
       end
-    end # Redis
+    end # Cassandra
   end # Store
 end # Aclatraz

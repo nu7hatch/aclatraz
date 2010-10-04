@@ -97,4 +97,16 @@ describe "Aclatraz" do
       Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Cassandra)
     end
   end
+  
+  describe "for CouchRest store" do 
+    subject { Aclatraz.init(:couch, "roles", "roles") }
+  
+    class_eval &STORE_SPECS
+  
+    it "should respect persistent connection given on initialize" do 
+      Aclatraz.instance_variable_set("@store", nil)
+      Aclatraz.init(:couch, "roles", "roles", CouchRest.new)
+      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(CouchRest)
+    end
+  end
 end

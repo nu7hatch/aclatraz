@@ -1,5 +1,3 @@
-require 'yaml'
-
 begin
   require "riak"
 rescue LoadError
