@@ -3,6 +3,7 @@
 * Added Cassandra store
 * Optimized Riak and Redis stores
 * Added benchmarks for all stores
+* Migration to RSpec-2
 
 == Version 0.1.2
 
