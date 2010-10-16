@@ -31,11 +31,11 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = %q[--colour --backtrace]
 end
 
-#Spec::Rake::SpecTask.new(:rcov) do |spec|
-#  spec.libs << 'lib' << 'spec'
-#  spec.pattern = 'spec/**/*_spec.rb'
-#  spec.rcov = true
-#end
+RSpec::Core::RakeTask.new(:rcov) do |t|
+  t.rcov = true
+  t.rspec_opts = %q[--colour --backtrace]
+  t.rcov_opts = %q[--exclude "spec" --text-report]
+end
 
 task :spec => :check_dependencies
 task :default => :spec
