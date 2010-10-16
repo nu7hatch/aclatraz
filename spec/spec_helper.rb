@@ -5,10 +5,9 @@ $VERBOSE = nil
 
 require 'rubygems'
 require 'aclatraz'
-require 'spec'
-require 'spec/autorun'
+require 'rspec'
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.mock_with :mocha
 end
 
