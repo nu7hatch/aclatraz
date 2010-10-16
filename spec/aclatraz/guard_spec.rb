@@ -161,7 +161,7 @@ describe "Aclatraz guard" do
     guarded.suspect.should == bar
   end 
   
-  describe "inherited guards" do 
+  context "inherited guards" do 
     class FooParent
       include Aclatraz::Guard
       
