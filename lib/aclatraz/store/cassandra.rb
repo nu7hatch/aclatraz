@@ -1,9 +1,3 @@
-begin
-  require 'cassandra'
-rescue LoadError
-  raise "You must install the casssandra gem to use the Cassandra store"
-end
-
 module Aclatraz
   module Store
     # List of global roles are stored in `roles => all` key. Each suspect has its 
@@ -21,7 +15,10 @@ module Aclatraz
       ALL_ROLES_KEY     = "all"
       SUSPECT_ROLES_KEY = "suspect.%s"
       
-      def initialize(*args) # :nodoc:
+      def initialize(*args)
+        require 'cassandra' rescue raise LoadError, \
+          "You must install the `casssandra` gem to use Cassandra store"
+        
         @family  = args.shift
         @backend = if args.first.respond_to?(:keyspace)
           args.first

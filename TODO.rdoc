@@ -4,3 +4,5 @@
 * Memcached store
 * Think that the main roles should have an impact on object/class ownerships
 * More Examples
+* Rails plugin
+* Rack/Sinatra/Padrino middleware or plugin
