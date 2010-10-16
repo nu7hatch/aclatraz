@@ -55,7 +55,7 @@ describe "Aclatraz" do
   let(:owner) { StubOwner.new }
   let(:target) { StubTarget.new }
   
-  describe "for Redis store" do 
+  context "for Redis store" do 
     subject { Aclatraz.init(:redis, "redis://localhost:6379/0") }
     
     class_eval &STORE_SPECS
@@ -74,7 +74,7 @@ describe "Aclatraz" do
     end 
   end
 
-  describe "for Riak store" do 
+  context "for Riak store" do 
     subject { Aclatraz.init(:riak, "roles") }
     
     class_eval &STORE_SPECS
@@ -86,7 +86,7 @@ describe "Aclatraz" do
     end
   end
   
-  describe "for Cassandra store" do 
+  context "for Cassandra store" do 
     subject { Aclatraz.init(:cassandra, "Super1", "Keyspace1") }
   
     class_eval &STORE_SPECS

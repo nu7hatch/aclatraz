@@ -38,7 +38,7 @@ describe "Aclatraz suspect" do
     subject.roles.has?(:foobar3, target).should be_false
   end
   
-  describe "syntactic sugars" do 
+  context "syntactic sugars" do 
     it "1: should properly set given role" do 
       subject.is.foobar1!
       subject.is.foobar2_of!(StubTarget)
