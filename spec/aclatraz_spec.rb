@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Aclatraz" do
-  describe "on init" do
+  context "on init" do
     it "should raise InvalidStore error when given store doesn't exists" do 
       lambda { Aclatraz.init(:fooobar) }.should raise_error(Aclatraz::InvalidStore)
     end
