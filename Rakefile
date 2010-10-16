@@ -5,20 +5,20 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "aclatraz"
+    gem.email = "kriss.kowalik@gmail.com"
+    gem.homepage = "http://github.com/nu7hatch/aclatraz"
+    gem.authors = ["Kriss 'nu7hatch' Kowalik"]
     gem.summary = %Q{Flexible access control that doesn't sucks!}
     gem.description = <<-DESCR
       Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
       powered by fast key value stores like Redis or TokyoCabinet.
     DESCR
-    gem.email = "kriss.kowalik@gmail.com"
-    gem.homepage = "http://github.com/nu7hatch/aclatraz"
-    gem.authors = ["Kriss 'nu7hatch' Kowalik"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_development_dependency "mocha", ">= 0.9"
+    gem.add_dependency "dictionary", "~> 1.0"
+    gem.add_development_dependency "rspec", "~> 2.0"
+    gem.add_development_dependency "mocha", "~> 0.9"
     gem.add_development_dependency "redis", "~> 2.0"
     gem.add_development_dependency "riak-client", "~> 0.8"
     gem.add_development_dependency "cassandra", "~> 0.8"
-    gem.add_dependency "dictionary", "~> 1.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
