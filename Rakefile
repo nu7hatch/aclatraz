@@ -10,8 +10,8 @@ begin
     gem.authors = ["Kriss 'nu7hatch' Kowalik"]
     gem.summary = %Q{Flexible access control that doesn't sucks!}
     gem.description = <<-DESCR
-      Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
-      powered by fast key value stores like Redis or TokyoCabinet.
+      Extremaly fast, flexible and intuitive access control mechanism, 
+      powered by fast key value stores like Redis.
     DESCR
     gem.add_dependency "dictionary", "~> 1.0"
     gem.add_development_dependency "rspec", "~> 2.0"

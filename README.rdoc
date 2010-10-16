@@ -1,7 +1,7 @@
 = ACLatraz
 
-Extremaly fast and flexible access control mechanism inspired by *nix ACLs, 
-powered by fast key value stores like Redis or TokyoCabinet. 
+Extremaly fast, flexible and intuitive access control mechanism, powered by 
+fast key value stores like Redis.
 
 == Installation
 
