@@ -5,6 +5,7 @@ $VERBOSE = nil
 
 require 'rubygems'
 require 'aclatraz'
+require 'mocha'
 require 'rspec'
 
 RSpec.configure do |config|
@@ -29,4 +30,23 @@ end
 
 class StubOwner
   def id; 15; end
+end
+
+class GuardedParent
+  include Aclatraz::Guard
+  def user; @user ||= StubSuspect.new; end
+  suspects :user do
+    allow :cooker
+    deny :waiter
+  end
+end
+
+class GuardedChild < GuardedParent
+  suspects do
+    deny :cooker
+    allow :manager
+  end
+end
+
+class StubStore
 end

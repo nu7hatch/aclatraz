@@ -4,9 +4,9 @@ module Aclatraz
       # All permissions defined in this action.  
       attr_reader :permissions
       
-      def initialize(parent, &block) # :nodoc:
+      def initialize(parent, &block) 
         @parent = parent
-        @permissions = Dictionary.new
+        @permissions = Dictionary.new {|h,k| h[k] = false}.merge(parent.permissions)
         instance_eval(&block) if block_given?
       end
 
@@ -54,9 +54,7 @@ module Aclatraz
       end
       
       def clone(parent) # :nodoc:
-        cloned = self.class.new(parent)
-        cloned.instance_variable_set("@permissions", Hash.new(permissions))
-        cloned
+        self.class.new(parent)
       end
     end # Action
     
@@ -66,7 +64,7 @@ module Aclatraz
     # Current suspected object. 
     attr_accessor :suspect
     
-    def initialize(suspect, &block) # :nodoc:
+    def initialize(suspect, &block)
       @actions = {}
       @suspect = suspect
       evaluate(&block) if block_given?
@@ -87,7 +85,7 @@ module Aclatraz
     
     # List of permissions defined in default action. 
     def permissions
-      @actions[:_] ? @actions[:_].permissions : Dictionary.new
+      @actions[:_] ? @actions[:_].permissions : Dictionary.new {|h,k| h[k] = false}
     end
     
     # Syntactic sugar for actions <tt>actions[action]</tt>.
@@ -109,7 +107,7 @@ module Aclatraz
     #     end
     #   end 
     def on(action, &block)
-      raise ArgumentError, "No block given" unless block_given?
+      raise ArgumentError, "No block given!" unless block_given?
       if @actions.key?(action)
         @actions[action].instance_eval(&block)
       else

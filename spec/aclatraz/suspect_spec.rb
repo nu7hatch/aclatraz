@@ -5,97 +5,99 @@ describe "Aclatraz suspect" do
   subject { StubSuspect.new }
   let(:target) { StubTarget.new }
   
-  its(:acl_suspect?) { should be_true }
+  it "#acl_suspect? should be true" do
+    subject.should be_acl_suspect
+  end
   
-  it "1: should properly set given role" do 
-    subject.roles.assign(:foobar1)
-    subject.roles.assign(:foobar2, StubTarget)
-    subject.roles.assign(:foobar3, target) 
+  it "should properly set given role" do 
+    subject.roles.assign(:first)
+    subject.roles.assign(:second, StubTarget)
+    subject.roles.assign(:third, target) 
     
-    subject.roles.has?(:foobar1).should be_true
-    subject.roles.has?(:foobar2, StubTarget).should be_true
-    subject.roles.has?(:foobar3, target).should be_true
+    subject.roles.has?(:first).should be_true
+    subject.roles.has?(:second, StubTarget).should be_true
+    subject.roles.has?(:third, target).should be_true
   end
   
-  it "2: should properly check given permissions" do 
-    subject.roles.has?(:foobar1).should be_true
-    subject.roles.has?(:foobar2, StubTarget).should be_true
-    subject.roles.has?(:foobar3, target).should be_true
-    subject.roles.has?(:foobar1, StubTarget).should be_false
+  it "should properly check given permissions" do 
+    subject.roles.has?(:first).should be_true
+    subject.roles.has?(:second, StubTarget).should be_true
+    subject.roles.has?(:third, target).should be_true
+    subject.roles.has?(:first, StubTarget).should be_false
   end
   
-  it "3: should allow to get list of roles assigned to user" do 
-    (subject.roles.all - ["foobar1", "foobar2", "foobar3"]) .should be_empty
+  it "should allow to get list of roles assigned to user" do 
+    (subject.roles.all - ["first", "second", "third"]) .should be_empty
   end
   
-  it "4: should properly remove given permissions" do 
-    subject.roles.delete(:foobar1)
-    subject.roles.delete(:foobar2, StubTarget)
-    subject.roles.delete(:foobar3, target) 
+  it "should properly remove given permissions" do 
+    subject.roles.delete(:first)
+    subject.roles.delete(:second, StubTarget)
+    subject.roles.delete(:third, target) 
     
-    subject.roles.has?(:foobar1).should be_false
-    subject.roles.has?(:foobar2, StubTarget).should be_false
-    subject.roles.has?(:foobar3, target).should be_false
+    subject.roles.has?(:first).should be_false
+    subject.roles.has?(:second, StubTarget).should be_false
+    subject.roles.has?(:third, target).should be_false
   end
   
   context "syntactic sugars" do 
-    it "1: should properly set given role" do 
-      subject.is.foobar1!
-      subject.is.foobar2_of!(StubTarget)
-      subject.is.foobar3_for!(target)
-      subject.is.foobar4_on!(target) 
-      subject.is.foobar5_at!(target)
-      subject.is.foobar6_by!(target)
-      subject.is.foobar7_in!(target)
+    it "should properly set given role" do 
+      subject.is.first!
+      subject.is.second_of!(StubTarget)
+      subject.is.third_for!(target)
+      subject.is.fourth_on!(target) 
+      subject.is.fifth_at!(target)
+      subject.is.sixth_by!(target)
+      subject.is.seventh_in!(target)
       
-      subject.roles.has?(:foobar1).should be_true
-      subject.roles.has?(:foobar2_of, StubTarget).should be_true
-      subject.roles.has?(:foobar3_for, target).should be_true
-      subject.roles.has?(:foobar4_of, target).should be_true
-      subject.roles.has?(:foobar5_at, target).should be_true
-      subject.roles.has?(:foobar6_by, target).should be_true
-      subject.roles.has?(:foobar7_in, target).should be_true
+      subject.roles.has?(:first).should be_true
+      subject.roles.has?(:second_of, StubTarget).should be_true
+      subject.roles.has?(:third_for, target).should be_true
+      subject.roles.has?(:fourth_of, target).should be_true
+      subject.roles.has?(:fifth_at, target).should be_true
+      subject.roles.has?(:sixth_by, target).should be_true
+      subject.roles.has?(:seventh_in, target).should be_true
     end
     
-    it "2: should properly check given permissions" do 
-      subject.is.foobar1?.should be_true
-      subject.is.foobar2_of?(StubTarget).should be_true
-      subject.is.foobar3_for?(target).should be_true
-      subject.is.foobar4_on?(target).should be_true
-      subject.is.foobar5_at?(target).should be_true
-      subject.is.foobar6_by?(target).should be_true
-      subject.is.foobar7_in?(target).should be_true
-      subject.is.foobar8_in?.should be_false
+    it "should properly check given permissions" do 
+      subject.is.first?.should be_true
+      subject.is.second_of?(StubTarget).should be_true
+      subject.is.third_for?(target).should be_true
+      subject.is.fourth_on?(target).should be_true
+      subject.is.fifth_at?(target).should be_true
+      subject.is.sixth_by?(target).should be_true
+      subject.is.seventh_in?(target).should be_true
+      subject.is.eighth_in?.should be_false
       
-      subject.is_not.foobar1?.should be_false
-      subject.is_not.foobar2_of?(StubTarget).should be_false
-      subject.is_not.foobar3_for?(target).should be_false
-      subject.is_not.foobar4_on?(target).should be_false
-      subject.is_not.foobar5_at?(target).should be_false
-      subject.is_not.foobar6_by?(target).should be_false
-      subject.is_not.foobar7_in?(target).should be_false
-      subject.is_not.foobar8_in?.should be_true
+      subject.is_not.first?.should be_false
+      subject.is_not.second_of?(StubTarget).should be_false
+      subject.is_not.third_for?(target).should be_false
+      subject.is_not.fourth_on?(target).should be_false
+      subject.is_not.fifth_at?(target).should be_false
+      subject.is_not.sixth_by?(target).should be_false
+      subject.is_not.seventh_in?(target).should be_false
+      subject.is_not.eighth_in?.should be_true
     end
     
-    it "3: should properly remove given permissions" do 
-      subject.is_not.foobar1!
-      subject.is_not.foobar2_of!(StubTarget)
-      subject.is_not.foobar3_for!(target)
-      subject.is_not.foobar4_on!(target) 
-      subject.is_not.foobar5_at!(target)
-      subject.is_not.foobar6_by!(target)
-      subject.is_not.foobar7_in!(target)
+    it "should properly remove given permissions" do 
+      subject.is_not.first!
+      subject.is_not.second_of!(StubTarget)
+      subject.is_not.third_for!(target)
+      subject.is_not.fourth_on!(target) 
+      subject.is_not.fifth_at!(target)
+      subject.is_not.sixth_by!(target)
+      subject.is_not.seventh_in!(target)
       
-      subject.is.foobar1?.should be_false
-      subject.is.foobar2_of?(StubTarget).should be_false
-      subject.is.foobar3_for?(target).should be_false
-      subject.is.foobar4_on?(target).should be_false
-      subject.is.foobar5_at?(target).should be_false
-      subject.is.foobar6_by?(target).should be_false
-      subject.is.foobar7_in?(target).should be_false
+      subject.is.first?.should be_false
+      subject.is.second_of?(StubTarget).should be_false
+      subject.is.third_for?(target).should be_false
+      subject.is.fourth_on?(target).should be_false
+      subject.is.fifth_at?(target).should be_false
+      subject.is.sixth_by?(target).should be_false
+      subject.is.seventh_in?(target).should be_false
     end
     
-    it "4: should raise NoMethodError when there is not checker or setter/deleter called" do
+    it "should raise NoMethodError when there is not checker or setter/deleter called" do
       lambda { subject.is.foobar }.should raise_error(NoMethodError)
       lambda { subject.is_not.foobar }.should raise_error(NoMethodError)
     end

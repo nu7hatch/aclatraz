@@ -1,45 +1,49 @@
 require 'spec_helper'
 
-describe "Aclatraz ACL" do 
+describe "Aclatraz ACL" do
+  subject { Aclatraz::ACL } 
   before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
   
-  it "should properly store suspect" do 
-    acl = Aclatraz::ACL.new(:bar) {}
-    acl.suspect.should == :bar
+  it "should properly set suspect" do 
+    acl = subject.new(:suspect) {}
+    acl.suspect.should == :suspect
   end
   
   it "should properly store flat access control lists" do
-    acl = Aclatraz::ACL.new(:foo) {} 
-    acl.actions[:_].allow :foo
-    acl.permissions[:foo].should be_true
-    acl.actions[:_].deny :foo
-    acl.permissions[:foo].should be_false
-    acl.actions[:_].allow :foo => :bar
-    acl.permissions[{:foo=>:bar}].should be_true
+    acl = subject.new(:suspect) {} 
+    acl.actions[:_].allow :admin
+    acl.permissions[:admin].should be_true
+    acl.actions[:_].deny :admin
+    acl.permissions[:admin].should be_false
+    acl.actions[:_].allow :owner_of => :book
+    acl.permissions[{:owner_of => :book}].should be_true
   end
   
-  it "should allow for define seperated lists which are inherit from main block" do 
-    acl = Aclatraz::ACL.new(:foo) do 
-      allow :foo
-      on(:spam) { allow :spam }
-      on(:eggs) { allow :eggs }
-      on(:spam) { allow :boo }
+  it "should allow for grouping permissions in namespaces, which are inherit from main block" do 
+    acl = subject.new(:suspect) do 
+      allow :admin
+      on(:library) { allow :librarian }
+      on(:kitchen) { allow :cooker }
+      on(:kennel)  { allow :dog }
     end
     
-    acl.permissions[:foo].should be_true
-    acl.permissions[:spam].should_not be_true
-    acl.permissions[:eggs].should_not be_true
-    acl.permissions[:boo].should_not be_true
-    acl[:spam].permissions[:foo].should be_nil
-    acl[:spam].permissions[:spam].should be_true
-    acl[:spam].permissions[:eggs].should be_nil
-    acl[:spam].permissions[:boo].should be_true
-    acl[:eggs].permissions[:foo].should be_nil
-    acl[:eggs].permissions[:eggs].should be_true
-    acl[:eggs].permissions[:spam].should be_nil
+    acl.permissions[:admin].should be_true
+    acl.permissions[:librarian].should be_false
+    acl.permissions[:cooker].should be_false
+    acl.permissions[:dog].should be_false
+    
+    acl[:library].permissions[:librarian].should be_true
+    acl[:library].permissions[:cooker].should be_false
+    acl[:library].permissions[:dog].should be_false
+    acl[:library].permissions[:admin].should be_false
+    
+    acl[:kitchen].permissions[:cooker].should be_true
+    acl[:kitchen].permissions[:librarian].should be_false
+    acl[:kitchen].permissions[:dog].should be_false
+    acl[:kitchen].permissions[:admin].should be_false
   end
   
-  it "should raise ArgumentError when no block given" do 
+  it "should raise error when no block given" do 
     lambda { Aclatraz::ACL.new }.should raise_error(ArgumentError)
   end
 end
