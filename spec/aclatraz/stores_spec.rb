@@ -95,11 +95,10 @@ describe "Aclatraz" do
   end
   
   context "for MongoDB store" do
-    subject do
+    subject {
       require 'mongo'
-      @mongo ||= Mongo::Connection.new.db("aclatraz_test")
-      Aclatraz.init(:mongo, "roles", @mongo)
-    end
+      Aclatraz.init(:mongo, "roles", @mongo ||= Mongo::Connection.new.db("aclatraz_test"))
+    }
     class_eval(&COMMON_STORE_SPECS)
   end
 end

@@ -2,7 +2,7 @@ require 'mongo'
 
 module Aclatraz
   module Store
-    # For mongo each role is stored in separated row:
+    # For MongoDB, each role is stored in separate row:
     #
     #   {"roles" => [
     #     {"suspect" => 1, "role" => "admin" },
@@ -13,34 +13,34 @@ module Aclatraz
       include Aclatraz::Helpers
 
       def initialize(collection, mongo)
-        @backend = mongo if args.first.respond_to?(:database_info)
+        @backend    = mongo
         @collection = collection
       end
 
       def set(role, suspect, object=nil)
-        @backend[collection].insert(make_doc(role, suspect, object))
+        @backend[@collection].insert(make_doc(role, suspect, object))
       end
 
       def roles(suspect=nil)
         if suspect
-          @backend[collection].find("suspect" => suspect_id(suspect)).map {|row| row["role"] }
+          @backend[@collection].find("suspect" => suspect_id(suspect)).map {|row| row["role"] }
         else
-          @backend[collection].find.map {|row| row["role"] }
+          @backend[@collection].find.map {|row| row["role"] }
         end.compact.uniq
       end
 
       def check(role, suspect, object=nil)
-        @backend[collection].find(make_doc(role, suspect, object)).empty? == false or begin
+        @backend[@collection].find(make_doc(role, suspect, object)).map.empty? == false or begin
           object && !object.is_a?(Class) ? check(role, suspect, object.class) : false
         end
       end
 
       def delete(role, suspect, object=nil)
-        @backend[collection].remove(make_doc(role, suspect, object)
+        @backend[@collection].remove(make_doc(role, suspect, object))
       end
 
       def clear
-        @backend[collection].remove
+        @backend[@collection].remove
       end
       
       private
