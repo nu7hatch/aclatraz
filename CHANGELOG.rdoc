@@ -1,5 +1,6 @@
 == Version 0.1.4 (Unreleased)
 
+* Added MongoDB store
 * Cleaner and more understandable specs
 * ACL bugfixes
 
