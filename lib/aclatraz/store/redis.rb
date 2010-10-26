@@ -1,3 +1,5 @@
+require 'redis'
+
 module Aclatraz
   module Store
     # List of global roles are stored in ROLES set. Each suspect has its 
@@ -15,9 +17,6 @@ module Aclatraz
       SUSPECT_ROLES_KEY = "suspect.%s.roles"
       
       def initialize(*args)
-        require 'redis' rescue raise LoadError, \
-          "You must install the `redis` gem to use Redis store"
-        
         @backend = if args.first.respond_to?(:sadd)
           args.first
         else

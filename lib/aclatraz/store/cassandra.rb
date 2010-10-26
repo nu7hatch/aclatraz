@@ -1,3 +1,5 @@
+require 'cassandra'
+
 module Aclatraz
   module Store
     # List of global roles are stored in `roles => all` key. Each suspect has its 
@@ -16,9 +18,6 @@ module Aclatraz
       SUSPECT_ROLES_KEY = "suspect.%s"
       
       def initialize(*args)
-        require 'cassandra' rescue raise LoadError, \
-          "You must install the `casssandra` gem to use Cassandra store"
-        
         @family  = args.shift
         @backend = if args.first.respond_to?(:keyspace)
           args.first

@@ -1,3 +1,5 @@
+require 'riak'
+
 module Aclatraz
   module Store
     # The most optimal way to store roles in riak database is pack everything
@@ -10,9 +12,6 @@ module Aclatraz
       include Aclatraz::Helpers
 
       def initialize(bucket_name, *args)
-        require "riak" rescue raise LoadError, \
-          "You must install the `riak-client` gem to use Riak store"
-        
         @backend = if args.first.respond_to?(:bucket)
           args.first.bucket(bucket_name)
         else

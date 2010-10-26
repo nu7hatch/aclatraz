@@ -1,3 +1,5 @@
+require 'mongo'
+
 module Aclatraz
   module Store
     # For mongo each role is stored in separated row:
@@ -11,9 +13,6 @@ module Aclatraz
       include Aclatraz::Helpers
 
       def initialize(collection, mongo)
-        require "mongo" rescue raise LoadError, \
-          "You must install the `mongo` gem to use MongoDB store"
-        
         @backend = mongo if args.first.respond_to?(:database_info)
         @collection = collection
       end

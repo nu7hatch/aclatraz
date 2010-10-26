@@ -93,4 +93,13 @@ describe "Aclatraz" do
       Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Cassandra)
     end
   end
+  
+  context "for MongoDB store" do
+    subject do
+      require 'mongo'
+      @mongo ||= Mongo::Connection.new.db("aclatraz_test")
+      Aclatraz.init(:mongo, "roles", @mongo)
+    end
+    class_eval(&COMMON_STORE_SPECS)
+  end
 end
