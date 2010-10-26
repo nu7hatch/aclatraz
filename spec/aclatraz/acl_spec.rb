@@ -44,6 +44,6 @@ describe "Aclatraz ACL" do
   end
   
   it "should raise error when no block given" do 
-    lambda { Aclatraz::ACL.new }.should raise_error(ArgumentError)
+    lambda { subject.new }.should raise_error(ArgumentError)
   end
 end
