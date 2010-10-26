@@ -19,6 +19,7 @@ begin
     gem.add_development_dependency "redis", "~> 2.0"
     gem.add_development_dependency "riak-client", "~> 0.8"
     gem.add_development_dependency "cassandra", "~> 0.8"
+    gem.add_development_dependency "mongo", "~> 1.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -64,6 +65,11 @@ namespace :benchmark do
   end
   task :riak do
     Aclatraz.init(:riak, "roles")
+    require File.dirname(__FILE__)+"/spec/alcatraz_bm"
+  end
+  task :mongo do
+    require 'mongo'
+    Aclatraz.init(:mongo, "roles", Mongo::Connection.new.db("aclatraz_test"))
     require File.dirname(__FILE__)+"/spec/alcatraz_bm"
   end
 end
