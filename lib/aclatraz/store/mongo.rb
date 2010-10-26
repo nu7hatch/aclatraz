@@ -12,6 +12,9 @@ module Aclatraz
     class Mongo
       include Aclatraz::Helpers
 
+      ROLE_KEY    = "role"
+      SUSPECT_KEY = "suspect"
+
       def initialize(collection, mongo)
         @backend    = mongo
         @collection = collection
@@ -23,9 +26,9 @@ module Aclatraz
 
       def roles(suspect=nil)
         if suspect
-          @backend[@collection].find("suspect" => suspect_id(suspect)).map {|row| row["role"] }
+          @backend[@collection].find(SUSPECT_KEY => suspect_id(suspect)).map {|row| row[ROLE_KEY] }
         else
-          @backend[@collection].find.map {|row| row["role"] }
+          @backend[@collection].find.map {|row| row[ROLE_KEY] }
         end.compact.uniq
       end
 
@@ -46,7 +49,7 @@ module Aclatraz
       private
       
       def make_doc(role, suspect, object)
-        { "suspect" => suspect_id(suspect), "role" => pack(role.to_s, object) }
+        { SUSPECT_KEY => suspect_id(suspect), ROLE_KEY => pack(role.to_s, object) }
       end
     end # Mongo
   end # Store

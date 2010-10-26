@@ -72,17 +72,6 @@ describe "Aclatraz" do
     end 
   end
 
-  context "for Riak store" do 
-    subject { Aclatraz.init(:riak, "roles") }
-    class_eval(&COMMON_STORE_SPECS)
-    
-    it "should respect persistent connection given on initalize" do 
-      Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:riak, "roles", Riak::Client.new)
-      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Riak::Bucket)
-    end
-  end
-  
   context "for Cassandra store" do 
     subject { Aclatraz.init(:cassandra, "Super1", "Keyspace1") }
     class_eval(&COMMON_STORE_SPECS)
@@ -100,5 +89,16 @@ describe "Aclatraz" do
       Aclatraz.init(:mongo, "roles", @mongo ||= Mongo::Connection.new.db("aclatraz_test"))
     }
     class_eval(&COMMON_STORE_SPECS)
+  end
+  
+  context "for Riak store" do 
+    subject { Aclatraz.init(:riak, "roles") }
+    class_eval(&COMMON_STORE_SPECS)
+    
+    it "should respect persistent connection given on initalize" do 
+      Aclatraz.instance_variable_set("@store", nil)
+      Aclatraz.init(:riak, "roles", Riak::Client.new)
+      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Riak::Bucket)
+    end
   end
 end
