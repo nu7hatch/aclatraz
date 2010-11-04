@@ -28,7 +28,7 @@ class Foo
   def test
     guard!(:foo, :bar)
   rescue
-  end  
+  end
 end
 
 $foo = Foo.new

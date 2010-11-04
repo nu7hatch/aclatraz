@@ -1,4 +1,4 @@
-== Version 0.1.4 (Unreleased)
+== Version 0.1.4
 
 * Added MongoDB store
 * Cleaner and more understandable specs

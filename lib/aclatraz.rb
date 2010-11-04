@@ -1,12 +1,13 @@
 require 'dictionary'
 
-require 'aclatraz/helpers'
-require 'aclatraz/store'
-require 'aclatraz/acl'
-require 'aclatraz/guard'
-require 'aclatraz/suspect'
-
 module Aclatraz
+  require 'aclatraz/helpers'
+  require 'aclatraz/store'
+  require 'aclatraz/acl'
+  require 'aclatraz/guard'
+  require 'aclatraz/suspect'
+  require 'aclatraz/version'
+  
   # Raised when suspect don't have permission to execute action
   class AccessDenied < Exception; end 
   
