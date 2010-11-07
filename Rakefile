@@ -27,6 +27,7 @@ task :default => :spec
 desc "Build current version as a rubygem"
 task :build do
   `gem build aclatraz.gemspec`
+  `mkdir -p pkg`
   `mv aclatraz-*.gem pkg/`
 end
 
@@ -36,6 +37,11 @@ task :release => :build do
   `git push origin master`
   `git push origin master --tags`
   `gem push pkg/aclatraz-#{Aclatraz.version}.gem`
+end
+
+desc "Perform installation via rubygems"
+task :install => :build do
+  `gem install pkg/aclatraz-#{Aclatraz.version}.gem`
 end
 
 namespace :benchmark do 
