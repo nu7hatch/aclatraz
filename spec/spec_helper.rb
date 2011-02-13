@@ -10,6 +10,14 @@ require 'rspec'
 
 RSpec.configure do |config|
   config.mock_with :mocha
+  config.filter_run_excluding :store => lambda { |store|
+    begin
+      require store
+      false
+    rescue LoadError
+      true
+    end
+  }
 end
 
 class StubSuspect

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-COMMON_STORE_SPECS = proc do
+shared_examples_for :store do
   it "should assign roles to owner and properly check permissions" do
     subject.clear
     subject.set("admin", owner)
@@ -54,51 +54,55 @@ describe "Aclatraz" do
   let(:owner) { StubOwner.new }
   let(:target) { StubTarget.new }
   
-  context "for Redis store" do 
+  context "for Redis store", :store => 'redis' do 
     subject { Aclatraz.init(:redis, "redis://localhost:6379/0") }
-    class_eval(&COMMON_STORE_SPECS)
+
+    it_should_behave_like :store do 
+      it "should respect persistent connection given on initalize" do 
+        Aclatraz.instance_variable_set("@store", nil)
+        Aclatraz.init(:redis, Redis.new("redis://localhost:6379/0"))
+        Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Redis)
+        Aclatraz.store.instance_variable_get('@backend').ping.should be_true
+      end
     
-    it "should respect persistent connection given on initalize" do 
-      Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:redis, Redis.new("redis://localhost:6379/0"))
-      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Redis)
-      Aclatraz.store.instance_variable_get('@backend').ping.should be_true
+      it "shouls respect redis hash options given in init" do 
+        Aclatraz.instance_variable_set("@store", nil)
+        Aclatraz.init(:redis, :url => "redis://localhost:6379/2")
+        Aclatraz.store.instance_variable_get('@backend').ping.should be_true
+      end
     end
-    
-    it "shouls respect redis hash options given in init" do 
-      Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:redis, :url => "redis://localhost:6379/2")
-      Aclatraz.store.instance_variable_get('@backend').ping.should be_true
-    end 
   end
 
-  context "for Cassandra store" do 
+  context "for Cassandra store", :store => 'cassandra' do 
     subject { Aclatraz.init(:cassandra, "Super1", "Keyspace1") }
-    class_eval(&COMMON_STORE_SPECS)
-  
-    it "should respect persistent connection given on initialize" do 
-      Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:cassandra, "Super1", Cassandra.new("Keyspace1"))
-      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Cassandra)
+    
+    it_should_behave_like :store do
+      it "should respect persistent connection given on initialize" do 
+        Aclatraz.instance_variable_set("@store", nil)
+        Aclatraz.init(:cassandra, "Super1", Cassandra.new("Keyspace1"))
+        Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Cassandra)
+      end
     end
   end
   
-  context "for MongoDB store" do
+  context "for MongoDB store", :store => 'mongo' do
     subject {
       require 'mongo'
       Aclatraz.init(:mongo, "roles", @mongo ||= Mongo::Connection.new.db("aclatraz_test"))
     }
-    class_eval(&COMMON_STORE_SPECS)
+
+    it_should_behave_like :store
   end
   
-  context "for Riak store" do 
+  context "for Riak store", :store => 'riak' do
     subject { Aclatraz.init(:riak, "roles") }
-    class_eval(&COMMON_STORE_SPECS)
-    
-    it "should respect persistent connection given on initalize" do 
-      Aclatraz.instance_variable_set("@store", nil)
-      Aclatraz.init(:riak, "roles", Riak::Client.new)
-      Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Riak::Bucket)
+ 
+    it_should_behave_like :store do
+      it "should respect persistent connection given on initalize" do 
+        Aclatraz.instance_variable_set("@store", nil)
+        Aclatraz.init(:riak, "roles", Riak::Client.new)
+        Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Riak::Bucket)
+      end
     end
   end
 end
