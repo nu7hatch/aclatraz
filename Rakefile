@@ -1,20 +1,36 @@
 # -*- ruby -*-
+
 $:.unshift(File.expand_path('../lib', __FILE__))
 require 'aclatraz/version'
-require 'rspec/core/rake_task'
+
+begin
+  require 'ore/tasks'
+  Ore::Tasks.new
+rescue LoadError => e
+  STDERR.puts e.message
+  STDERR.puts "Run `gem install ore-tasks` to install 'ore/tasks'."
+end
+
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+  task :spec do
+    abort 'Run `gem install rspec` to install RSpec'
+  end
+end
+
+task :test => :spec
+task :default => :test
+
+begin 
+  require 'metric_fu'
+rescue LoadError
+  STDERR.puts e.message
+  STDERR.puts "Run `gem install metric_fu` to install Metric-Fu"
+end
+
 require 'rake/rdoctask'
-
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = 'spec/**/*_spec.rb'
-  t.rspec_opts = %q[-c -b]
-end
-
-RSpec::Core::RakeTask.new(:rcov) do |t|
-  t.rcov = true
-  t.rspec_opts = %q[-c -b]
-  t.rcov_opts = %q[-T -x "spec"]
-end
-
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "ACLatraz #{Aclatraz.version}"
@@ -22,48 +38,29 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-task :default => :spec
-
-desc "Build current version as a rubygem"
-task :build do
-  `gem build aclatraz.gemspec`
-  `mkdir -p pkg`
-  `mv aclatraz-*.gem pkg/`
-end
-
-desc "Relase current version to rubygems.org"
-task :release => :build do
-  `git tag -am "Version bump to #{Aclatraz.version}" v#{Aclatraz.version}`
-  `git push origin master`
-  `git push origin master --tags`
-  `gem push pkg/aclatraz-#{Aclatraz.version}.gem`
-end
-
-desc "Perform installation via rubygems"
-task :install => :build do
-  `gem install pkg/aclatraz-#{Aclatraz.version}.gem`
-end
-
 namespace :benchmark do 
   require 'aclatraz'
   require 'benchmark'
-  
+
   benchmarks = File.expand_path("../spec/alcatraz_bm.rb", __FILE__)
   
   desc "Redis store benchmarks"
   task :redis do 
+    require 'redis'
     Aclatraz.init(:redis)
     load benchmarks
   end
   
   desc "Cassandra store benchmarks"
   task :cassandra do 
+    require 'cassandra'
     Aclatraz.init(:cassandra, "Super1", "Keyspace1")
     load benchmarks
   end
   
   desc "Riak store benchmarks"
   task :riak do
+    require 'riak-client'
     Aclatraz.init(:riak, "roles")
     load benchmarks
   end

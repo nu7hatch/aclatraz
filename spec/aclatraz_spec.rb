@@ -1,6 +1,10 @@
-require 'spec_helper'
+require File.dirname(__FILE__) + '/spec_helper'
 
 describe "Aclatraz" do
+  it "version should be 0.1.4" do
+    Aclatraz.version.should == '0.1.4'
+  end
+
   context "on init" do
     it "should raise error when given store is invalid" do 
       lambda { 

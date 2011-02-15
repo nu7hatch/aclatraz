@@ -6,7 +6,7 @@ module Aclatraz
       
       def initialize(parent, &block) 
         @parent = parent
-        @permissions = Dictionary.new {|h,k| h[k] = false}.merge(parent.permissions)
+        @permissions = Dictionary.new {|hash,key| hash[key] = false}.merge(parent.permissions)
         instance_eval(&block) if block_given?
       end
 
@@ -85,7 +85,11 @@ module Aclatraz
     
     # List of permissions defined in default action. 
     def permissions
-      @actions[:_] ? @actions[:_].permissions : Dictionary.new {|h,k| h[k] = false}
+      if actions = @actions[:_]
+        actions.permissions
+      else
+        Dictionary.new {|hash,key| hash[key] = false}
+      end
     end
     
     # Syntactic sugar for actions <tt>actions[action]</tt>.
@@ -116,7 +120,7 @@ module Aclatraz
     end
 
     def clone(&block) # :nodoc:
-      actions = Hash[*self.actions.map {|k,v| [k, v.clone(self)] }.flatten]
+      actions = Hash[*self.actions.map {|key,value| [key, value.clone(self)] }.flatten]
       cloned = self.class.new(suspect)
       cloned.instance_variable_set("@actions", actions)
       cloned.evaluate(&block)

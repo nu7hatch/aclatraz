@@ -33,14 +33,17 @@ module Aclatraz
       #   suspects do 
       #     allow :manager
       #   end
-      def suspects(suspect=nil, &block)
-        if acl = Aclatraz.acl[name]
-          acl.suspect = suspect if suspect
+      def suspects(*args, &block)
+        acl_name  = self.name
+        acl_store = Aclatraz.acl
+        
+        if acl = acl_store[acl_name]
+          acl.suspect = args.first unless args.empty?
           acl.evaluate(&block)
-        elsif superclass.respond_to?(:acl_guard?) && acl = Aclatraz.acl[superclass.name]
-          Aclatraz.acl[name] = acl.clone(&block)
+        elsif acl = acl_store[superclass.name]
+          acl_store[acl_name] = acl.clone(&block)
         else
-          Aclatraz.acl[name] = Aclatraz::ACL.new(suspect, &block)
+          acl_store[acl_name] = Aclatraz::ACL.new(*args, &block)
         end
       end
       alias_method :access_control, :suspects
@@ -82,13 +85,13 @@ module Aclatraz
       #   end
       def suspect
         @suspect ||= if acl = Aclatraz.acl[self.class.name]
-          case acl.suspect
+          case suspect = acl.suspect
           when Symbol 
-            send(acl.suspect)
+            send(suspect)
           when String 
-            instance_variable_get("@#{acl.suspect}")
+            instance_variable_get("@#{suspect}")
           else 
-            acl.suspect
+            suspect
           end
         end
       end
@@ -103,7 +106,8 @@ module Aclatraz
       #     allow :bar
       #   end
       def guard!(*actions, &block)
-        acl = Aclatraz.acl[self.class.name] or raise UndefinedAccessControlList, "No ACL for #{self.class.name} class"
+        acl_name = self.class.name
+        acl = Aclatraz.acl[acl_name] or raise UndefinedAccessControlList, "No ACL for #{acl_name} class"
         suspect.respond_to?(:acl_suspect?)  or raise Aclatraz::InvalidSuspect, "Invalid ACL suspect: #{suspect.inspect}"
         authorized = false
         permissions = Dictionary.new

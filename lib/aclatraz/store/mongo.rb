@@ -26,10 +26,11 @@ module Aclatraz
 
       def roles(suspect=nil)
         if suspect
-          @backend[@collection].find(SUSPECT_KEY => suspect_id(suspect)).map {|row| row[ROLE_KEY] }
+          roles = @backend[@collection].find(SUSPECT_KEY => suspect_id(suspect)).map {|row| row[ROLE_KEY] }
         else
-          @backend[@collection].find.map {|row| row[ROLE_KEY] }
-        end.compact.uniq
+          roles = @backend[@collection].find.map {|row| row[ROLE_KEY] }
+        end
+        roles.compact.uniq
       end
 
       def check(role, suspect, object=nil)

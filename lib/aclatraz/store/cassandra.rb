@@ -28,8 +28,9 @@ module Aclatraz
       
       def set(role, suspect, object=nil)
         data = {}
-        data[ALL_ROLES_KEY] = [role.to_s] unless object
-        data[SUSPECT_ROLES_KEY % suspect_id(suspect)] = [pack(role.to_s, object)]
+        role = role.to_s
+        data[ALL_ROLES_KEY] = [role] unless object
+        data[SUSPECT_ROLES_KEY % suspect_id(suspect)] = [pack(role, object)]
         @backend.insert(@family, ROLES_KEY, data)
       end
       
@@ -44,8 +45,9 @@ module Aclatraz
       end
       
       def check(role, suspect, object=nil)
+        role = role.to_s
         @backend.exists?(@family, ROLES_KEY, SUSPECT_ROLES_KEY % suspect_id(suspect), \
-          pack(role.to_s, object)) or \
+          pack(role, object)) or \
           object && !object.is_a?(Class) ? check(role, suspect, object.class) : false
       end
       

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require File.dirname(__FILE__) + '/../spec_helper'
 
 shared_examples_for :store do
   it "should assign roles to owner and properly check permissions" do

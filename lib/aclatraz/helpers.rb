@@ -3,8 +3,8 @@ module Aclatraz
     # Given underscored word, returns camelized version of it. 
     #
     #   camelize(foo_bar_bla) # => "FooBarBla"
-    def camelize(str)
-      str.split('_').map {|w| w.capitalize}.join
+    def camelize(string)
+      string.split('_').map {|word| word.capitalize}.join
     end
     
     # If given object is kind of string or integer then returns it, otherwise
@@ -26,12 +26,13 @@ module Aclatraz
     def pack(role, object=nil)
       case object
       when nil
-        [role]
+        data = [role]
       when Class 
-        [role, object.name]
+        data = [role, object.name]
       else 
-        [role, object.class.name, object.id]
-      end.join("/")
+        data = [role, object.class.name, object.id]
+      end
+      data.join("/")
     end
   end # Helpers
 end # Aclatraz
