@@ -46,14 +46,12 @@ module Aclatraz
       
       def check(role, suspect, object=nil)
         role = role.to_s
-        @backend.exists?(@family, ROLES_KEY, SUSPECT_ROLES_KEY % suspect_id(suspect), \
-          pack(role, object)) or \
+        @backend.exists?(@family, ROLES_KEY, SUSPECT_ROLES_KEY % suspect_id(suspect), pack(role, object)) or
           object && !object.is_a?(Class) ? check(role, suspect, object.class) : false
       end
       
       def delete(role, suspect, object=nil)
-        @backend.remove(@family, ROLES_KEY, SUSPECT_ROLES_KEY % suspect_id(suspect), \
-          pack(role.to_s, object))
+        @backend.remove(@family, ROLES_KEY, SUSPECT_ROLES_KEY % suspect_id(suspect), pack(role.to_s, object))
       end
       
       def clear

@@ -33,19 +33,19 @@ module Aclatraz
       
       def roles(suspect=nil)
         if suspect
-          @backend.smembers(SUSPECT_ROLES_KEY % suspect_id(suspect)).map {|role|
+          roles = @backend.smembers(SUSPECT_ROLES_KEY % suspect_id(suspect)).map { |role|
             role = unpack(role)
             role[0] if role.size == 1
-          }.compact.uniq
+          }
+          roles.compact.uniq
         else
           @backend.smembers(ROLES_KEY)
         end
       end
       
       def check(role, suspect, object=nil)
-        @backend.sismember(SUSPECT_ROLES_KEY % suspect_id(suspect), pack(role.to_s, object)) or begin
+        @backend.sismember(SUSPECT_ROLES_KEY % suspect_id(suspect), pack(role.to_s, object)) or
           object && !object.is_a?(Class) ? check(role, suspect, object.class) : false
-        end
       end
       
       def delete(role, suspect, object=nil)
