@@ -57,7 +57,7 @@ module Aclatraz
       #   suspect.roles.assign(:bar)
       #   suspect.roles.all # => ["foo", "bar"]
       def all
-        Aclatraz.store.roles(self)
+        Aclatraz.store.roles(suspect)
       end
       alias_method :list, :all
     end # Roles
