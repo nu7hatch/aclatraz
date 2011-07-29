@@ -55,12 +55,12 @@ describe "Aclatraz" do
   let(:target) { StubTarget.new }
   
   context "for Redis store", :store => 'redis' do 
-    subject { Aclatraz.init(:redis, "redis://localhost:6379/0") }
+    subject { Aclatraz.init :redis,  :host => "127.0.0.1", :database => 0 }
 
     it_should_behave_like :store do 
       it "should respect persistent connection given on initalize" do 
         Aclatraz.instance_variable_set("@store", nil)
-        Aclatraz.init(:redis, Redis.new("redis://localhost:6379/0"))
+        Aclatraz.init :redis, :host => "127.0.0.1", :database => 0
         Aclatraz.store.instance_variable_get('@backend').should be_kind_of(Redis)
         Aclatraz.store.instance_variable_get('@backend').ping.should be_true
       end
