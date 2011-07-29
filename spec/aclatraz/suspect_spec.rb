@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe "Aclatraz suspect" do 
-  before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
+  before(:all) { Aclatraz.init :redis,  :host => "127.0.0.1", :database => 0 }
   subject { StubSuspect.new }
   let(:target) { StubTarget.new }
   

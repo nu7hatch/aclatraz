@@ -13,7 +13,7 @@ module Aclatraz
 
   # Initialize Aclatraz system with given datastore. 
   #
-  #   Aclatraz.init :redis, "redis://localhost:6379/0"
+  #   Aclatraz.init :redis, :host => "127.0.0.1", :database => 0
   #   Aclatraz.init :tokyocabinet, "./permissions.tch"
   #   Aclatraz.init MyCustomDatastore, :option => 1 # ...
   def self.init(store, *args)

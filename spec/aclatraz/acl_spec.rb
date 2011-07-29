@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe "Aclatraz ACL" do
   subject { Aclatraz::ACL } 
-  before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
+  before(:all) {Aclatraz.init :redis,  :host => "127.0.0.1", :database => 0 }
   
   it "should properly set suspect" do 
     acl = subject.new(:suspect) {}

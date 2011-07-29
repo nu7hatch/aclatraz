@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe "Aclatraz guard" do 
   subject { Class.new(StubGuarded) }
   let(:suspect) { @suspect ||= StubSuspect.new }
-  before(:all) { Aclatraz.init(:redis, "redis://localhost:6379/0") }
+  before(:all) { Aclatraz.init :redis,  :host => "127.0.0.1", :database => 0 }
   define_method(:deny_access) { raise_error(Aclatraz::AccessDenied) }
  
   it "#acl_guard? should be true" do 
