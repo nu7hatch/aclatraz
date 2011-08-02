@@ -78,7 +78,7 @@ module Aclatraz
       alias_method :delete_all, :clear
       alias_method :remove_all, :clear
       
-      # Enumerates all objects on which explizit permissions for the given role 
+      # Enumerates all objects on which explicit permissions for the given role 
       # have been granted via suspect.roles.add(:role, object)
       #
       # This method does not return the objects that permissions were granted for to avoid
