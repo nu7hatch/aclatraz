@@ -43,6 +43,22 @@ module Aclatraz
         end
       end
       
+      def permissions(for_role, suspect)
+        permissions = @backend.smembers(SUSPECT_ROLES_KEY % suspect_id(suspect)).map { |role|
+          role = unpack(role)
+          if role.size > 1 && role[0] == for_role
+            if 3 == role.size
+              role[2] # return the object id
+            else
+              resolve_class(role[1]) # return the class
+            end
+          else
+            nil  
+          end
+        }
+        permissions.compact.uniq
+      end
+      
       def check(role, suspect, object=nil)
         @backend.sismember(SUSPECT_ROLES_KEY % suspect_id(suspect), pack(role.to_s, object)) or
           object && !object.is_a?(Class) ? check(role, suspect, object.class) : false

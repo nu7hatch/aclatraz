@@ -34,5 +34,11 @@ module Aclatraz
       end
       data.join("/")
     end
+    
+    # Resolve the given class name to a Class object
+    def resolve_class(name)
+      name.split('::').inject(Kernel) {|scope, const_name| scope.const_get(const_name)}
+    end
+    
   end # Helpers
 end # Aclatraz

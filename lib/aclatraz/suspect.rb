@@ -78,6 +78,23 @@ module Aclatraz
       alias_method :delete_all, :clear
       alias_method :remove_all, :clear
       
+      # Enumerates all objects on which explizit permissions for the given role 
+      # have been granted via suspect.roles.add(:role, object)
+      #
+      # This method does not return the objects that permissions were granted for to avoid
+      # costly single retrieval of potentially hundreds of objects from a store.
+      #
+      # ==== Examples
+      #
+      #   suspect.roles.add(:foo, 12)
+      #   suspect.roles.add(:foo, 15)
+      #   suspect.roles.add(:bar, 3)
+      #   suspect.roles.permissions(:foo) # => [12, 15]
+      #
+      def permissions(role)
+        Aclatraz.store.permissions(role, suspect)
+      end
+      
     end # Roles
   
     class SemanticRoles
