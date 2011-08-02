@@ -43,14 +43,25 @@ module Aclatraz
         end
       end
       
-      def permissions(for_role, suspect)
+      def permissions(for_role, suspect, object=nil)
+        given_klass = (object.nil? || object.is_a?(Class)) ? object : object.class
+        
         permissions = @backend.smembers(SUSPECT_ROLES_KEY % suspect_id(suspect)).map { |role|
           role = unpack(role)
           if role.size > 1 && role[0] == for_role
             if 3 == role.size
-              role[2] # return the object id
+              klass = resolve_class(role[1])
+              if (given_klass.nil? || klass == given_klass)
+                [klass, role[2]] # return the object id
+              else
+                nil
+              end
             else
-              resolve_class(role[1]) # return the class
+              if (given_klass.nil? || klass == given_klass)
+                resolve_class(role[1]) # return the class
+              else
+                nil
+              end
             end
           else
             nil  

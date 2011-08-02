@@ -82,17 +82,24 @@ module Aclatraz
       # have been granted via suspect.roles.add(:role, object)
       #
       # This method does not return the objects that permissions were granted for to avoid
-      # costly single retrieval of potentially hundreds of objects from a store.
+      # costly single retrieval of potentially hundreds of objects from a store. Instead a 
+      # tupel of [Class, Id] is returned for each individual object permissions were granted
+      # on and the Class is returned if permissions were granted on a Class.
+      #
+      # You can enumerate permissions granted on a type of objects by passing the Class or 
+      # one instance of the Class as second parameter
       #
       # ==== Examples
       #
-      #   suspect.roles.add(:foo, 12)
-      #   suspect.roles.add(:foo, 15)
-      #   suspect.roles.add(:bar, 3)
-      #   suspect.roles.permissions(:foo) # => [12, 15]
+      #   suspect.roles.assign(:author, Page.find(15)) 
+      #   suspect.roles.assign(:author, BlogEntry.find(15)) 
+      #   suspect.roles.assign(:author, Book)
+      #   suspect.roles.permissions(:author) => [[Page, 15], [BlogEntry, 15], Book]
+      #   suspect.roles.permissions(:author, Page) # => [[Page, 15]]
+      #   suspect.roles.permissions(:author, Page.find(1)) # => [[Page, 15]]
       #
-      def permissions(role)
-        Aclatraz.store.permissions(role, suspect)
+      def permissions(role, object=nil)
+        Aclatraz.store.permissions(role, suspect, object)
       end
       
     end # Roles
