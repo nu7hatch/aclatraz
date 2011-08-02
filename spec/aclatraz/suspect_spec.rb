@@ -27,6 +27,11 @@ describe "Aclatraz suspect" do
   end
   
   it "should allow to get list of roles assigned to user" do 
+    subject.roles.clear
+    subject.roles.assign(:first)
+    subject.roles.assign(:second, StubTarget)
+    subject.roles.assign(:third, target) 
+    
     (subject.roles.all - ["first", "second", "third"]) .should be_empty
   end
   
@@ -38,6 +43,11 @@ describe "Aclatraz suspect" do
     subject.roles.has?(:first).should be_false
     subject.roles.has?(:second, StubTarget).should be_false
     subject.roles.has?(:third, target).should be_false
+  end
+  
+  it "should properly clear all given permissions" do
+    subject.roles.clear
+    subject.roles.all.should be_empty
   end
   
   context "syntactic sugars" do 
