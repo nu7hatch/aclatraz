@@ -57,8 +57,9 @@ module Aclatraz
                 nil
               end
             else
+              klass = resolve_class(role[1])
               if (given_klass.nil? || klass == given_klass)
-                resolve_class(role[1]) # return the class
+                 klass # return the class
               else
                 nil
               end
