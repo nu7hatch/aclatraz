@@ -60,6 +60,24 @@ module Aclatraz
         Aclatraz.store.roles(suspect)
       end
       alias_method :list, :all
+      
+      # Clears all roles assigned to the current object and returns the list.
+      #
+      # ==== Examples
+      #
+      #   suspect.roles.assign(:foo)
+      #   suspect.roles.assign(:bar)
+      #   suspect.roles.clear # => ["foo", "bar"]
+      #   suspect.roles.has?(:foo) # => false
+      #   suspect.roles.has?(:bar) # => false
+      def clear
+        all.each do |role|
+          delete(role)
+        end
+      end
+      alias_method :delete_all, :clear
+      alias_method :remove_all, :clear
+      
     end # Roles
   
     class SemanticRoles
