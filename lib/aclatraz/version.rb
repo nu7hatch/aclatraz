@@ -1,12 +1,6 @@
 module Aclatraz
-  class Version #:nodoc:
-    MAJOR  = 0
-    MINOR  = 1
-    PATCH  = 4
-    STRING = [MAJOR, MINOR, PATCH].join('.')
-  end # Version
-  
-  def self.version # :nodoc:
-    Version::STRING
-  end 
-end # Gmail
+  MAJOR = 0
+  MINOR = 1
+  PATCH = 4
+  VERSION = [MAJOR, MINOR, PATCH].join('.')
+end
