@@ -60,6 +60,48 @@ module Aclatraz
         Aclatraz.store.roles(suspect)
       end
       alias_method :list, :all
+      
+      # Clears all roles assigned to the current object and returns the list.
+      #
+      # ==== Examples
+      #
+      #   suspect.roles.assign(:foo)
+      #   suspect.roles.assign(:bar)
+      #   suspect.roles.clear # => ["foo", "bar"]
+      #   suspect.roles.has?(:foo) # => false
+      #   suspect.roles.has?(:bar) # => false
+      def clear
+        all.each do |role|
+          delete(role)
+        end
+      end
+      alias_method :delete_all, :clear
+      alias_method :remove_all, :clear
+      
+      # Enumerates all objects on which explicit permissions for the given role 
+      # have been granted via suspect.roles.add(:role, object)
+      #
+      # This method does not return the objects that permissions were granted for to avoid
+      # costly single retrieval of potentially hundreds of objects from a store. Instead a 
+      # tupel of [Class, Id] is returned for each individual object permissions were granted
+      # on and the Class is returned if permissions were granted on a Class.
+      #
+      # You can enumerate permissions granted on a type of objects by passing the Class or 
+      # one instance of the Class as second parameter
+      #
+      # ==== Examples
+      #
+      #   suspect.roles.assign(:author, Page.find(15)) 
+      #   suspect.roles.assign(:author, BlogEntry.find(15)) 
+      #   suspect.roles.assign(:author, Book)
+      #   suspect.roles.permissions(:author) => [[Page, 15], [BlogEntry, 15], Book]
+      #   suspect.roles.permissions(:author, Page) # => [[Page, 15]]
+      #   suspect.roles.permissions(:author, Page.find(1)) # => [[Page, 15]]
+      #
+      def permissions(role, object=nil)
+        Aclatraz.store.permissions(role, suspect, object)
+      end
+      
     end # Roles
   
     class SemanticRoles
